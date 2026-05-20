@@ -149,13 +149,14 @@
 
   .placeholder {
     text-align: center;
-    color: #2a2a2a;
+    color: #9ca3af;
     font-size: 0.8rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
+    font-weight: 700;
   }
 
-  .placeholder div { font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.3; }
+  .placeholder div { font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.85; }
 
   #image-result img {
     max-width: 100%;
@@ -168,6 +169,11 @@
   #excel-result {
     width: 100%;
     overflow-x: auto;
+  }
+
+  #excel-result.excel-loaded {
+    background: #ffffff;
+    color: #111111;
     align-items: flex-start;
     justify-content: flex-start;
   }
@@ -177,17 +183,18 @@
     border-collapse: collapse;
     font-size: 0.82rem;
     letter-spacing: 0.02em;
+    background: #ffffff;
   }
 
   thead tr {
-    background: #111;
-    border-bottom: 2px solid #00ff88;
+    background: #f1f5f9;
+    border-bottom: 2px solid #222;
   }
 
   th {
     padding: 0.6rem 1rem;
     text-align: left;
-    color: #00ff88;
+    color: #111111;
     font-weight: 700;
     text-transform: uppercase;
     font-size: 0.72rem;
@@ -197,17 +204,17 @@
 
   td {
     padding: 0.55rem 1rem;
-    border-bottom: 1px solid #151515;
-    color: #ccc;
+    border-bottom: 1px solid #dddddd;
+    color: #111111;
     white-space: nowrap;
   }
 
-  tbody tr:hover td { background: #111; color: #fff; }
+  tbody tr:hover td { background: #e8f5ee; color: #000000; }
 
-  tbody tr:nth-child(even) td { background: #0a0a0a; }
+  tbody tr:nth-child(even) td { background: #f8fafc; }
 
   .row-num {
-    color: #333 !important;
+    color: #666 !important;
     font-size: 0.7rem;
     user-select: none;
     width: 2rem;
@@ -406,6 +413,7 @@ function renderSheetTabs(sheets) {
   const el = document.getElementById('excel-result');
   el.style.alignItems = 'flex-start';
   el.style.justifyContent = 'flex-start';
+  el.classList.add('excel-loaded');
   el.innerHTML = '';
 
   if (sheets.length > 1) {
