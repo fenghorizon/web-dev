@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mongolian Shagai - Traditional Game</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #d4af37;
+            --dark-bg: #1a1a2e;
+            --card-bg: #16213e;
+            --accent: #e94560;
+            --success: #00d4ff;
+            --warm-tan: #c9a961;
+            --sage: #6b8e5f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 50%, #16213e 100%);
+            background-attachment: fixed;
+            color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header & Title */
+        .header {
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), rgba(233, 69, 96, 0.1));
+            border-bottom: 3px solid var(--primary);
+            padding: 1.5rem;
+            text-align: center;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            color: var(--success);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Main Container */
+        .container-game {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Setup Panel */
+        .setup-panel {
+            background: var(--card-bg);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.8s ease-out 0.2s both;
+            box-shadow: 0 8px 32px rgba(212, 175, 55, 0.15);
+        }
+
+        .setup-panel h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--primary);
+            color: #f5f5f5;
+            padding: 0.75rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--success);
+            box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+            color: #f5f5f5;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        #playerNamesContainer {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .player-name-field {
+            min-width: 0;
+        }
+
+        .btn-primary-game {
+            background: linear-gradient(135deg, var(--primary), var(--warm-tan));
+            border: none;
+            color: #1a1a2e;
+            padding: 0.85rem 2rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1rem;
+        }
+
+        .btn-primary-game:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-primary-game:active {
+            transform: translateY(0);
+        }
+
+        /* Game Board */
+        .game-board {
+            display: none;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .game-board.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Track Container */
+        .track-container {
+            background: var(--card-bg);
+            border: 3px solid var(--sage);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5), 0 8px 32px rgba(107, 142, 95, 0.15);
+            position: sticky;
+            top: 0.75rem;
+            z-index: 20;
+        }
+
+        .track-title {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Individual Track */
+        .player-track {
+            margin-bottom: 2rem;
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .track-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            padding: 0 0.5rem;
+        }
+
+        .player-name {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .player-position {
+            color: var(--success);
+            font-size: 0.9rem;
+        }
+
+        .track {
+            background: linear-gradient(90deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            height: 50px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .finish-line {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: repeating-linear-gradient(
+                90deg,
+                var(--accent),
+                var(--accent) 8px,
+                var(--primary) 8px,
+                var(--primary) 16px
+            );
+            box-shadow: 0 0 12px var(--accent);
+        }
+
+        .horse {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            width: 58px;
+            height: 42px;
+            transition: left 0.3s ease-out;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+            z-index: 10;
+        }
+
+        .horse.winner {
+            animation: bounce 0.5s ease-out;
+            width: 68px;
+            height: 50px;
+        }
+
+        .horse img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .horse.moving img {
+            filter: brightness(0) invert(1);
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(-50%) scale(1);
+            }
+            50% {
+                transform: translateY(-80%) scale(1.15);
+            }
+        }
+
+        /* Bone Rolling Area */
+        .bone-area {
+            background: var(--card-bg);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 0.9rem 1.1rem 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            box-shadow: 0 8px 32px rgba(233, 69, 96, 0.15);
+        }
+
+        .bone-area h3 {
+            color: var(--primary);
+            margin-bottom: 0.65rem;
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .bones-display {
+            display: flex;
+            justify-content: center;
+            gap: 0.65rem;
+            margin-top: 0.65rem;
+            margin-bottom: 0.5rem;
+            min-height: 72px;
+            flex-wrap: wrap;
+        }
+
+        .bone {
+            width: 82px;
+            height: 66px;
+            background: #d7c0a3;
+            background-image: var(--bone-image);
+            background-size: var(--bone-size, 200% 200%);
+            background-position: var(--bone-position);
+            background-repeat: no-repeat;
+            border: 3px solid #8b7355;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+            transition: all 0.3s ease;
+            animation: roll 0.35s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bone::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.22), transparent 45%, rgba(92, 64, 51, 0.18));
+            pointer-events: none;
+        }
+
+        .bone-label {
+            position: absolute;
+            bottom: -22px;
+            font-size: 0.72rem;
+            color: var(--success);
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        @keyframes roll {
+            0% {
+                transform: translate(var(--throw-x, 0), -38px) rotateX(180deg) rotateZ(calc(var(--land-rotate, 0deg) - 210deg)) scale(0.45);
+                opacity: 0;
+            }
+            42% {
+                transform: translate(calc(var(--throw-x, 0) * -0.35), 12px) rotateX(80deg) rotateZ(calc(var(--land-rotate, 0deg) + 90deg)) scale(1.12);
+                opacity: 1;
+            }
+            68% {
+                transform: translate(calc(var(--throw-x, 0) * 0.18), -8px) rotateX(28deg) rotateZ(calc(var(--land-rotate, 0deg) - 24deg)) scale(0.96);
+            }
+            100% {
+                transform: translate(0, 0) rotateX(0) rotateZ(var(--land-rotate, 0deg)) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .roll-info {
+            font-size: 1rem;
+            color: var(--success);
+            font-weight: 700;
+            margin-bottom: 0;
+            min-height: 2rem;
+        }
+
+        .roll-info .horses-count {
+            font-size: 1.55rem;
+            color: var(--primary);
+        }
+
+        .special-roll {
+            color: var(--accent);
+            font-size: 1.05rem;
+            animation: pulse 0.6s ease-out;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .btn-roll {
+            background: linear-gradient(135deg, var(--accent), #ff6b7a);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.7rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.95rem;
+        }
+
+        .btn-roll:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(233, 69, 96, 0.4);
+        }
+
+        .btn-roll:disabled {
+            background: rgba(233, 69, 96, 0.3);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Status Panel */
+        .status-panel {
+            background: var(--card-bg);
+            border: 2px solid var(--success);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.15);
+        }
+
+        .status-panel h3 {
+            color: var(--success);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .current-player {
+            font-size: 1.3rem;
+            color: var(--primary);
+            font-weight: 700;
+            padding: 1rem;
+            background: rgba(212, 175, 55, 0.1);
+            border-left: 4px solid var(--primary);
+            border-radius: 4px;
+        }
+
+        /* Win Screen */
+        .win-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .win-screen.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .win-content {
+            background: linear-gradient(135deg, var(--card-bg), rgba(233, 69, 96, 0.1));
+            border: 3px solid var(--primary);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 500px;
+            animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .win-content h2 {
+            color: var(--primary);
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .winner-name {
+            color: var(--success);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+        }
+
+        .celebration {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, var(--primary), var(--warm-tan));
+            border: none;
+            color: #1a1a2e;
+            padding: 1rem 2.5rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1.1rem;
+        }
+
+        .btn-restart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary-game {
+            background: rgba(107, 142, 95, 0.3);
+            border: 2px solid var(--sage);
+            color: var(--sage);
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.95rem;
+        }
+
+        .btn-secondary-game:hover {
+            background: rgba(107, 142, 95, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Rules Info */
+        .rules-info {
+            background: rgba(107, 142, 95, 0.15);
+            border-left: 4px solid var(--sage);
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+            color: #d0d0d0;
+        }
+
+        .rules-info h4 {
+            color: var(--sage);
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+
+        .rules-info ul {
+            margin-bottom: 0;
+            padding-left: 1.5rem;
+        }
+
+        .rules-info li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .horse {
+                width: 46px;
+                height: 34px;
+            }
+
+            .horse.winner {
+                width: 56px;
+                height: 42px;
+            }
+
+            .bone {
+                width: 76px;
+                height: 60px;
+            }
+
+            .bone-label {
+                font-size: 0.68rem;
+                bottom: -21px;
+            }
+
+            .track {
+                height: 40px;
+            }
+
+            .track-container {
+                position: static;
+                padding: 1.25rem;
+            }
+
+            .bone-area {
+                padding: 1rem;
+            }
+
+            #playerNamesContainer {
+                grid-template-columns: 1fr;
+            }
+
+            .win-content {
+                padding: 2rem;
+                max-width: 90%;
+            }
+
+            .win-content h2 {
+                font-size: 2rem;
+            }
+
+            .winner-name {
+                font-size: 1.5rem;
+            }
+
+            .bones-display {
+                min-height: 72px;
+            }
+        }
+
+        /* Utility Classes */
+        .text-center-game {
+            text-align: center;
+        }
+
+        .mt-4 {
+            margin-top: 2rem !important;
+        }
+
+        .mb-3 {
+            margin-bottom: 1rem !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>🐴 Шагай Ордны Уралдаан 🎲</h1>
+        <p>Mongolian Traditional Knuckle Bone Racing Game</p>
+    </div>
+
+    <div class="container-game">
+        <!-- Setup Panel -->
+        <div class="setup-panel" id="setupPanel">
+            <h2>⚙️ Game Setup</h2>
+            
+            <div class="rules-info">
+                <h4>📖 Game Rules</h4>
+                <ul>
+                    <li><strong>4 Knuckle Bones:</strong> Each has 4 faces - Horse (морь), Camel (төмөр), Sheep (хонь), Goat (ямаа)</li>
+                    <li><strong>Count Horses:</strong> Count how many bones land as Horse (морь)</li>
+                    <li><strong>Movement:</strong> Move your horse forward by the number of horses rolled (1-4)</li>
+                    <li><strong>Special Roll:</strong> All 4 types (дөрвөн бэрх) = move 4 spaces!</li>
+                    <li><strong>No Horses:</strong> If no bones land as Horse, skip your turn</li>
+                    <li><strong>Victory:</strong> First horse to reach the finish line wins!</li>
+                </ul>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Number of Players</label>
+                    <select id="playerCount" class="form-control">
+                        <option value="2">2 Players</option>
+                        <option value="3">3 Players</option>
+                        <option value="4">4 Players</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Track Length</label>
+                    <select id="difficulty" class="form-control">
+                        <option value="20">Short (20 units)</option>
+                        <option value="50" selected>Medium (50 units)</option>
+                        <option value="100">Long (100 units)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="playerNamesContainer"></div>
+
+            <div class="text-center-game mt-4">
+                <button class="btn-primary-game" onclick="startGame()">Start Game</button>
+            </div>
+        </div>
+
+        <!-- Game Board -->
+        <div class="game-board" id="gameBoard">
+            <!-- Status Panel -->
+            <div class="status-panel">
+                <h3>📊 Current Turn</h3>
+                <div class="current-player" id="currentPlayerDisplay">Player 1's Turn</div>
+            </div>
+
+            <!-- Bone Rolling Area -->
+            <div class="bone-area">
+                <h3>🎲 Throw Your Bones!</h3>
+                <button class="btn-roll" id="rollButton" onclick="rollBones()">Throw 4 Bones</button>
+                <div class="bones-display" id="bonesDisplay"></div>
+                <div class="roll-info" id="rollInfo"></div>
+            </div>
+
+            <!-- Track Container -->
+            <div class="track-container">
+                <div class="track-title">🏁 Race Track</div>
+                <div id="tracksContainer"></div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn-secondary-game" onclick="resetGame()">New Game</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Win Screen -->
+    <div class="win-screen" id="winScreen">
+        <div class="win-content">
+            <div class="celebration">🎉</div>
+            <h2>Victory!</h2>
+            <div class="winner-name" id="winnerName"></div>
+            <p style="color: var(--success); font-size: 1.1rem; margin-bottom: 2rem;">
+                reached the finish line first!
+            </p>
+            <button class="btn-restart" onclick="resetGame()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Animal types for Shagai bones
+        const BONE_TYPES = {
+            HORSE: 'Horse',
+            CAMEL: 'Camel',
+            SHEEP: 'Sheep',
+            GOAT: 'Goat'
+        };
+
+        const BONE_IMAGES = {
+            Horse: { image: 'horse.png', position: 'center', size: 'contain' },
+            Camel: { image: 'camel.png', position: 'center', size: 'contain' },
+            Sheep: { image: 'sheep.png', position: 'center', size: 'contain' },
+            Goat: { image: 'goat.png', position: 'center', size: 'contain' }
+        };
+
+        const HORSE_IDLE_SRC = 'horse-road-white.png';
+        const HORSE_RUN_SRC = 'horse-road-run-white.gif';
+        new Image().src = HORSE_RUN_SRC;
+
+        // Game State
+        let gameState = {
+            players: [],
+            currentPlayerIndex: 0,
+            trackLength: 50,
+            gameActive: false,
+            bonesRolled: false
+        };
+
+        // Initialize player names input
+        function updatePlayerNamesContainer() {
+            const count = parseInt(document.getElementById('playerCount').value);
+            const container = document.getElementById('playerNamesContainer');
+            container.innerHTML = '';
+
+            for (let i = 0; i < count; i++) {
+                container.innerHTML += `
+                    <div class="player-name-field">
+                        <label class="form-label">Player ${i + 1} Name</label>
+                        <input type="text" class="form-control player-name-input" 
+                               placeholder="Enter name or use default" 
+                               id="playerName${i}">
+                    </div>
+                `;
+            }
+        }
+
+        // Event listener for player count change
+        document.getElementById('playerCount').addEventListener('change', updatePlayerNamesContainer);
+
+        // Initialize on load
+        updatePlayerNamesContainer();
+
+        // Start Game
+        function startGame() {
+            const count = parseInt(document.getElementById('playerCount').value);
+            const trackLength = parseInt(document.getElementById('difficulty').value);
+
+            gameState.players = [];
+            gameState.trackLength = trackLength;
+            gameState.currentPlayerIndex = 0;
+            gameState.gameActive = true;
+            gameState.bonesRolled = false;
+
+            const horseEmojis = ['🐴', '🐎', '🦄', '🐭'];
+
+            for (let i = 0; i < count; i++) {
+                const nameInput = document.getElementById(`playerName${i}`);
+                const name = nameInput.value.trim() || `Player ${i + 1}`;
+                gameState.players.push({
+                    name: name,
+                    position: 0,
+                    horseEmoji: horseEmojis[i]
+                });
+            }
+
+            // Hide setup, show game board
+            document.getElementById('setupPanel').style.display = 'none';
+            document.getElementById('gameBoard').classList.add('active');
+
+            // Render tracks
+            renderTracks();
+            updateStatus();
+            clearBonesDisplay();
+        }
+
+        // Render tracks
+        function renderTracks() {
+            const container = document.getElementById('tracksContainer');
+            container.innerHTML = '';
+
+            gameState.players.forEach((player, index) => {
+                const trackHtml = `
+                    <div class="player-track">
+                        <div class="track-label">
+                            <span class="player-name">${player.horseEmoji} ${player.name}</span>
+                            <span class="player-position">${player.position} / ${gameState.trackLength}</span>
+                        </div>
+                        <div class="track" id="track${index}">
+                            <div class="finish-line"></div>
+                            <div class="horse" id="horse${index}">
+                                <img src="horse-road-white.png" alt="${player.name}'s horse">
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += trackHtml;
+            });
+
+            updateHorsePositions();
+        }
+
+        // Update horse positions visually
+        function updateHorsePositions() {
+            gameState.players.forEach((player, index) => {
+                const horse = document.getElementById(`horse${index}`);
+                const track = document.getElementById(`track${index}`);
+                const trackWidth = track.offsetWidth;
+                const finishLineWidth = 4;
+                const maxPosition = trackWidth - finishLineWidth - horse.offsetWidth;
+                const percentage = Math.min((player.position / gameState.trackLength) * 100, 95);
+                const position = (percentage / 100) * maxPosition;
+                horse.style.left = position + 'px';
+            });
+        }
+
+        // Update status display
+        function updateStatus() {
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            document.getElementById('currentPlayerDisplay').textContent = 
+                `${currentPlayer.horseEmoji} ${currentPlayer.name}'s Turn`;
+            document.getElementById('rollButton').disabled = gameState.bonesRolled;
+        }
+
+        function setHorseMoving(index, isMoving) {
+            const horseImage = document.querySelector(`#horse${index} img`);
+            if (!horseImage) return;
+            horseImage.closest('.horse')?.classList.toggle('moving', isMoving);
+            horseImage.src = isMoving ? HORSE_RUN_SRC : HORSE_IDLE_SRC;
+        }
+
+        function focusTrackArea() {
+            document.querySelector('.track-container')?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+
+        function focusBoneArea() {
+            document.querySelector('.bone-area')?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // Simulate bone roll
+        function rollBones() {
+            if (gameState.bonesRolled || !gameState.gameActive) return;
+
+            gameState.bonesRolled = true;
+
+            // Roll 4 bones - each can be Horse, Camel, Sheep, or Goat
+            const boneTypes = [];
+            const boneValues = [];
+
+            for (let i = 0; i < 4; i++) {
+                const typeIndex = Math.floor(Math.random() * 4);
+                const types = [BONE_TYPES.HORSE, BONE_TYPES.CAMEL, BONE_TYPES.SHEEP, BONE_TYPES.GOAT];
+                const type = types[typeIndex];
+                boneTypes.push(type);
+                boneValues.push(type === BONE_TYPES.HORSE ? 1 : 0);
+            }
+
+            // Count horses
+            const horseCount = boneValues.reduce((a, b) => a + b, 0);
+
+            // Check for special roll: дөрвөн бэрх (all 4 types)
+            const uniqueTypes = new Set(boneTypes).size;
+            const isSpecialRoll = uniqueTypes === 4;
+
+            // Display bones with animation
+            displayBones(boneTypes);
+            focusTrackArea();
+
+            // Move horse
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            let movement = 0;
+
+            if (isSpecialRoll) {
+                movement = 4; // дөрвөн бэрх = 4 spaces
+            } else if (horseCount > 0) {
+                movement = horseCount;
+            }
+
+            currentPlayer.position += movement;
+
+            // Update display
+            setTimeout(() => {
+                if (movement > 0) {
+                    setHorseMoving(gameState.currentPlayerIndex, true);
+                }
+                requestAnimationFrame(updateHorsePositions);
+                setTimeout(() => {
+                    setHorseMoving(gameState.currentPlayerIndex, false);
+                }, 700);
+                
+                if (isSpecialRoll) {
+                    document.getElementById('rollInfo').innerHTML = 
+                        `<div class="special-roll">🌟 Дөрвөн бэрх! (All 4 types) 🌟<br>Move <span class="horses-count">4</span> spaces!</div>`;
+                } else if (horseCount > 0) {
+                    document.getElementById('rollInfo').innerHTML = 
+                        `<div><span class="horses-count">${horseCount}</span> Horse${horseCount > 1 ? 's' : ''} - Move <span class="horses-count">${movement}</span> space${movement > 1 ? 's' : ''}!</div>`;
+                } else {
+                    document.getElementById('rollInfo').innerHTML = 
+                        `<div style="color: var(--accent);">No horses! Skip your turn.</div>`;
+                }
+
+                // Check for winner
+                setTimeout(() => {
+                    if (currentPlayer.position >= gameState.trackLength) {
+                        winGame(currentPlayer);
+                    } else if (movement === 0) {
+                        // Skip turn if no horses
+                        setTimeout(() => {
+                            nextPlayer();
+                        }, 500);
+                    } else {
+                        // Next player
+                        setTimeout(() => {
+                            nextPlayer();
+                        }, 700);
+                    }
+                }, 180);
+            }, 250);
+        }
+
+        // Display bones
+        function displayBones(boneTypes) {
+            const display = document.getElementById('bonesDisplay');
+            display.innerHTML = '';
+            
+            boneTypes.forEach((type, index) => {
+                setTimeout(() => {
+                    const boneContainer = document.createElement('div');
+                    boneContainer.style.position = 'relative';
+                    
+                    const bone = document.createElement('div');
+                    const boneImage = BONE_IMAGES[type];
+                    bone.className = 'bone';
+                    bone.setAttribute('role', 'img');
+                    bone.setAttribute('aria-label', `${type} shagai`);
+                    bone.style.setProperty('--bone-image', `url("${boneImage.image}")`);
+                    bone.style.setProperty('--bone-position', boneImage.position);
+                    bone.style.setProperty('--bone-size', boneImage.size);
+                    bone.style.setProperty('--throw-x', `${Math.floor(Math.random() * 60) - 30}px`);
+                    bone.style.setProperty('--land-rotate', `${Math.floor(Math.random() * 32) - 16}deg`);
+                    
+                    const label = document.createElement('div');
+                    label.className = 'bone-label';
+                    label.textContent = type;
+                    
+                    boneContainer.appendChild(bone);
+                    boneContainer.appendChild(label);
+                    display.appendChild(boneContainer);
+                }, index * 60);
+            });
+        }
+
+        // Clear bones display
+        function clearBonesDisplay() {
+            document.getElementById('bonesDisplay').innerHTML = '';
+            document.getElementById('rollInfo').innerHTML = '';
+        }
+
+        // Next player
+        function nextPlayer() {
+            gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+            gameState.bonesRolled = false;
+            clearBonesDisplay();
+            updateStatus();
+            focusBoneArea();
+        }
+
+        // Win game
+        function winGame(winner) {
+            gameState.gameActive = false;
+            document.getElementById('winnerName').textContent = `${winner.horseEmoji} ${winner.name}`;
+            document.getElementById('winScreen').classList.add('active');
+
+            // Celebrate winner horse
+            const winnerIndex = gameState.players.indexOf(winner);
+            const winnerHorse = document.getElementById(`horse${winnerIndex}`);
+            setHorseMoving(winnerIndex, false);
+            winnerHorse.classList.add('winner');
+        }
+
+        // Reset game
+        function resetGame() {
+            document.getElementById('gameBoard').classList.remove('active');
+            document.getElementById('setupPanel').style.display = 'block';
+            document.getElementById('winScreen').classList.remove('active');
+            gameState.gameActive = false;
+            gameState.bonesRolled = false;
+            clearBonesDisplay();
+        }
+
+        // Handle window resize for responsive horse positioning
+        window.addEventListener('resize', () => {
+            if (gameState.gameActive) {
+                updateHorsePositions();
+            }
+        });
+    </script>
+</body>
+</html>
