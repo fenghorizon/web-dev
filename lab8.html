@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<title>Хэрэглэгчийн бүртгэл</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+}
+
+.container {
+    width: 700px;
+    margin: 50px auto;
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+h2 {
+    text-align: center;
+}
+
+.form input {
+    display: block;
+    width: 100%;
+    margin: 10px -10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.add {
+    background: #22c55e;
+    color: white;
+    width: 100%;
+}
+
+.delete {
+    background: red;
+    color: white;
+}
+
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #334155;
+    padding: 10px;
+    text-align: center;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+    <h2>Хэрэглэгчийн бүртгэл</h2>
+
+    <div class="form">
+        <input type="text" id="ovog" placeholder="Овог...">
+        <input type="text" id="ner" placeholder="Нэр...">
+        <input type="number" id="nas" placeholder="Нас...">
+        <button class="add" onclick="burtgeh()">Бүртгэх</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Овог</th>
+                <th>Нэр</th>
+                <th>Нас</th>
+                <th>Үйлдэл</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+</div>
+
+<script>
+let data = [];
+
+function burtgeh() {
+    let ovog = document.getElementById("ovog").value;
+    let ner = document.getElementById("ner").value;
+    let nas = document.getElementById("nas").value;
+
+    if (ovog === "" || ner === "" || nas === "") {
+        alert("Бүх талбарыг бөглөнө үү!");
+        return;
+    }
+
+    data.push({ovog, ner, nas});
+
+    localStorage.setItem("users", JSON.stringify(data));
+
+    clearInputs();
+    render();
+}
+
+function render() {
+    let table = document.getElementById("tableBody");
+    table.innerHTML = "";
+
+    data.forEach((user, index) => {
+        let row = `
+        <tr>
+            <td>${index + 1}</td>
+            <td>${user.ovog}</td>
+            <td>${user.ner}</td>
+            <td>${user.nas}</td>
+            <td>
+                <button class="delete" onclick="deleteUser(${index})">X</button>
+            </td>
+        </tr>
+        `;
+        table.innerHTML += row;
+    });
+}
+
+function deleteUser(index) {
+    data.splice(index, 1);
+    localStorage.setItem("users", JSON.stringify(data));
+    render();
+}
+
+function clearInputs() {
+    document.getElementById("ovog").value = "";
+    document.getElementById("ner").value = "";
+    document.getElementById("nas").value = "";
+}
+
+// load data
+window.onload = function() {
+    let saved = localStorage.getItem("users");
+    if (saved) {
+        data = JSON.parse(saved);
+    }
+    render();
+};
+</script>
+
+</body>
+</html>

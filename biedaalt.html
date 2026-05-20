@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VELOX — Fixed Gear</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --black:#0a0a0a;
+    --white:#f5f5f0;
+    --accent:#c8f000;
+    --gray:#1a1a1a;
+    --gray2:#2a2a2a;
+    --muted:#888;
+    --font:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  }
+  html{scroll-behavior:smooth;}
+  body{background:var(--black);color:var(--white);font-family:var(--font);overflow-x:hidden;}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:64px;border-bottom:1px solid #1e1e1e;background:rgba(10,10,10,0.92);backdrop-filter:blur(10px);}
+  .nav-logo{font-size:22px;font-weight:900;letter-spacing:6px;color:var(--white);text-decoration:none;}
+  .nav-logo span{color:var(--accent);}
+  .nav-links{display:flex;gap:32px;list-style:none;}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:13px;letter-spacing:2px;text-transform:uppercase;transition:color .2s;}
+  .nav-links a:hover{color:var(--white);}
+  .nav-right{display:flex;align-items:center;gap:20px;}
+  .cart-btn{background:var(--accent);color:var(--black);border:none;padding:8px 20px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:opacity .2s;}
+  .cart-btn:hover{opacity:.85;}
+  .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
+  .hamburger span{display:block;width:22px;height:1.5px;background:var(--white);}
+
+  /* HERO */
+  .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 5% 8%;position:relative;overflow:hidden;}
+  .hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0a0a0a 40%,#111 100%);}
+  .hero-graphic{position:absolute;right:-5%;top:50%;transform:translateY(-50%);width:60%;max-width:720px;opacity:.18;}
+  .hero-graphic svg{width:100%;height:auto;}
+  .hero-tag{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:20px;position:relative;}
+  .hero-title{font-size:clamp(52px,9vw,120px);font-weight:900;line-height:.92;letter-spacing:-2px;position:relative;}
+  .hero-title .outline{-webkit-text-stroke:1px var(--white);color:transparent;}
+  .hero-sub{font-size:15px;color:var(--muted);max-width:380px;line-height:1.7;margin:28px 0 40px;position:relative;}
+  .hero-actions{display:flex;gap:16px;align-items:center;position:relative;}
+  .btn-primary{background:var(--accent);color:var(--black);border:none;padding:16px 36px;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:opacity .2s;}
+  .btn-primary:hover{opacity:.85;}
+  .btn-ghost{background:transparent;color:var(--white);border:1px solid #333;padding:15px 36px;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:border-color .2s,color .2s;}
+  .btn-ghost:hover{border-color:var(--white);}
+  .hero-scroll{position:absolute;bottom:40px;right:5%;display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--muted);font-size:11px;letter-spacing:3px;text-transform:uppercase;}
+  .scroll-line{width:1px;height:60px;background:linear-gradient(to bottom,var(--accent),transparent);animation:scrollAnim 2s ease-in-out infinite;}
+  @keyframes scrollAnim{0%,100%{opacity:.3;transform:scaleY(.6);}50%{opacity:1;transform:scaleY(1);}}
+
+  /* MARQUEE */
+  .marquee-wrap{overflow:hidden;border-top:1px solid #1e1e1e;border-bottom:1px solid #1e1e1e;padding:14px 0;background:var(--gray);}
+  .marquee-track{display:flex;gap:0;animation:marquee 18s linear infinite;}
+  .marquee-track span{white-space:nowrap;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);padding:0 48px;}
+  .marquee-track span b{color:var(--accent);}
+  @keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* SECTION COMMON */
+  section{padding:100px 5%;}
+  .section-label{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;}
+  .section-title{font-size:clamp(28px,4vw,48px);font-weight:900;line-height:1;letter-spacing:-1px;margin-bottom:48px;}
+
+  /* FEATURED */
+  .featured-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2px;}
+  .product-card{background:var(--gray);position:relative;overflow:hidden;cursor:pointer;group:true;}
+  .product-img{width:100%;aspect-ratio:4/5;background:var(--gray2);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+  .product-img svg{width:70%;height:70%;transition:transform .4s ease;}
+  .product-card:hover .product-img svg{transform:scale(1.06);}
+  .product-overlay{position:absolute;inset:0;background:rgba(200,240,0,0.04);opacity:0;transition:opacity .3s;}
+  .product-card:hover .product-overlay{opacity:1;}
+  .add-overlay{position:absolute;bottom:0;left:0;right:0;background:var(--accent);color:var(--black);text-align:center;padding:14px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;transform:translateY(100%);transition:transform .3s ease;}
+  .product-card:hover .add-overlay{transform:translateY(0);}
+  .product-info{padding:20px;}
+  .product-name{font-size:15px;font-weight:700;letter-spacing:1px;margin-bottom:6px;}
+  .product-price{font-size:14px;color:var(--accent);font-weight:700;}
+  .product-tag{display:inline-block;font-size:10px;letter-spacing:2px;text-transform:uppercase;border:1px solid #333;color:var(--muted);padding:3px 8px;margin-bottom:10px;}
+
+  /* CATEGORIES */
+  .categories{background:var(--gray);}
+  .cat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2px;}
+  .cat-card{background:var(--gray2);padding:40px 30px;cursor:pointer;transition:background .2s;border-bottom:2px solid transparent;transition:border-color .2s;}
+  .cat-card:hover{border-color:var(--accent);}
+  .cat-num{font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:16px;}
+  .cat-name{font-size:20px;font-weight:900;letter-spacing:-0.5px;margin-bottom:8px;}
+  .cat-count{font-size:12px;color:var(--muted);}
+
+  /* MANIFESTO */
+  .manifesto{border-top:1px solid #1e1e1e;}
+  .manifesto-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+  .manifesto-text p{font-size:16px;color:var(--muted);line-height:1.8;margin-bottom:20px;}
+  .manifesto-text p strong{color:var(--white);}
+  .manifesto-visual{display:flex;flex-direction:column;gap:2px;}
+  .stat-row{display:flex;justify-content:space-between;align-items:flex-end;padding:24px 0;border-bottom:1px solid #1e1e1e;}
+  .stat-row:first-child{border-top:1px solid #1e1e1e;}
+  .stat-num{font-size:clamp(36px,5vw,64px);font-weight:900;letter-spacing:-2px;color:var(--accent);}
+  .stat-label{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+
+  /* TESTIMONIALS */
+  .testimonials{background:var(--gray);}
+  .testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2px;}
+  .testi-card{background:var(--gray2);padding:36px 30px;}
+  .testi-quote{font-size:15px;line-height:1.7;color:var(--white);margin-bottom:24px;}
+  .testi-author{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);}
+  .testi-city{font-size:11px;color:var(--muted);margin-top:4px;}
+  .testi-rating{display:flex;gap:4px;margin-bottom:20px;}
+  .testi-dot{width:6px;height:6px;background:var(--accent);}
+
+  /* NEWSLETTER */
+  .newsletter{text-align:center;border-top:1px solid #1e1e1e;}
+  .newsletter .section-title{margin-bottom:12px;}
+  .newsletter p{color:var(--muted);font-size:14px;margin-bottom:40px;}
+  .newsletter-form{display:flex;gap:0;max-width:500px;margin:0 auto;}
+  .newsletter-form input{flex:1;background:#111;border:1px solid #2a2a2a;border-right:none;color:var(--white);padding:16px 20px;font-size:14px;outline:none;font-family:var(--font);}
+  .newsletter-form input::placeholder{color:var(--muted);}
+  .newsletter-form input:focus{border-color:#333;}
+  .newsletter-form button{background:var(--accent);color:var(--black);border:none;padding:16px 28px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:opacity .2s;}
+  .newsletter-form button:hover{opacity:.85;}
+
+  /* FOOTER */
+  footer{background:var(--gray);border-top:1px solid #1e1e1e;padding:60px 5% 40px;}
+  .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px;}
+  .footer-brand{font-size:20px;font-weight:900;letter-spacing:4px;margin-bottom:16px;}
+  .footer-brand span{color:var(--accent);}
+  .footer-tagline{font-size:13px;color:var(--muted);line-height:1.7;}
+  .footer-col h4{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:20px;}
+  .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:12px;}
+  .footer-col ul a{color:#666;text-decoration:none;font-size:13px;transition:color .2s;}
+  .footer-col ul a:hover{color:var(--white);}
+  .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:32px;border-top:1px solid #1e1e1e;}
+  .footer-bottom p{font-size:12px;color:#444;}
+
+  /* MOBILE NAV */
+  .mobile-menu{display:none;position:fixed;inset:0;background:var(--black);z-index:200;flex-direction:column;justify-content:center;align-items:center;gap:40px;}
+  .mobile-menu.open{display:flex;}
+  .mobile-menu a{font-size:32px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--white);text-decoration:none;transition:color .2s;}
+  .mobile-menu a:hover{color:var(--accent);}
+  .mobile-close{position:absolute;top:20px;right:5%;background:none;border:none;color:var(--white);font-size:28px;cursor:pointer;font-weight:300;}
+
+  @media(max-width:900px){
+    .nav-links{display:none;}
+    .hamburger{display:flex;}
+    .manifesto-inner{grid-template-columns:1fr;}
+    .footer-grid{grid-template-columns:1fr 1fr;}
+  }
+  @media(max-width:600px){
+    .footer-grid{grid-template-columns:1fr;}
+    .hero-title{letter-spacing:-1px;}
+    .newsletter-form{flex-direction:column;}
+    .newsletter-form input{border-right:1px solid #2a2a2a;border-bottom:none;}
+    .newsletter-form button{padding:16px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">VEL<span>O</span>X</a>
+  <ul class="nav-links">
+    <li><a href="#shop">Shop</a></li>
+    <li><a href="#categories">Components</a></li>
+    <li><a href="#manifesto">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="cart-btn">Cart (0)</button>
+    <button class="hamburger" onclick="document.getElementById('mobileMenu').classList.add('open')">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" onclick="document.getElementById('mobileMenu').classList.remove('open')">&#x2715;</button>
+  <a href="#shop" onclick="document.getElementById('mobileMenu').classList.remove('open')">Shop</a>
+  <a href="#categories" onclick="document.getElementById('mobileMenu').classList.remove('open')">Components</a>
+  <a href="#manifesto" onclick="document.getElementById('mobileMenu').classList.remove('open')">About</a>
+  <a href="#contact" onclick="document.getElementById('mobileMenu').classList.remove('open')">Contact</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-graphic" aria-hidden="true">
+    <svg viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Rear wheel -->
+      <circle cx="130" cy="280" r="110" stroke="#c8f000" stroke-width="1.2"/>
+      <circle cx="130" cy="280" r="14" fill="#1a1a1a" stroke="#c8f000" stroke-width="1.5"/>
+      <!-- Spokes rear -->
+      <line x1="130" y1="170" x2="130" y2="280" stroke="#c8f000" stroke-width=".8" opacity=".4"/>
+      <line x1="240" y1="280" x2="130" y2="280" stroke="#c8f000" stroke-width=".8" opacity=".4"/>
+      <line x1="20" y1="280" x2="130" y2="280" stroke="#c8f000" stroke-width=".8" opacity=".4"/>
+      <line x1="130" y1="390" x2="130" y2="280" stroke="#c8f000" stroke-width=".8" opacity=".4"/>
+      <line x1="52" y1="202" x2="130" y2="280" stroke="#c8f000" stroke-width=".8" opacity=".4"/>
+      <line x1="208" y1="202" x2="130" y2="280" stroke="#c8f000" stroke-width=".8" opacity=".4"/>
+      <line x1="208" y1="358" x2="130" y2="280" stroke="#c8f000" stroke-width=".8" opacity=".4"/>
+      <line x1="52" y1="358" x2="130" y2="280" stroke="#c8f000" stroke-width=".8" opacity=".4"/>
+      <!-- Front wheel -->
+      <circle cx="380" cy="280" r="110" stroke="#c8f000" stroke-width="1.2"/>
+      <circle cx="380" cy="280" r="14" fill="#1a1a1a" stroke="#c8f000" stroke-width="1.5"/>
+      <!-- Spokes front -->
+      <line x1="380" y1="170" x2="380" y2="280" stroke="#c8f000" stroke-width=".8" opacity=".4"/>
+      <line x1="490" y1="280" x2="380" y2="280" stroke="#c8f000" stroke-width=".8" opacity=".4"/>
+      <line x1="270" y1="280" x2="380" y2="280" stroke="#c8f000" stroke-width=".8" opacity=".4"/>
+      <line x1="380" y1="390" x2="380" y2="280" stroke="#c8f000" stroke-width=".8" opacity=".4"/>
+      <line x1="302" y1="202" x2="380" y2="280" stroke="#c8f000" stroke-width=".8" opacity=".4"/>
+      <line x1="458" y1="202" x2="380" y2="280" stroke="#c8f000" stroke-width=".8" opacity=".4"/>
+      <line x1="458" y1="358" x2="380" y2="280" stroke="#c8f000" stroke-width=".8" opacity=".4"/>
+      <line x1="302" y1="358" x2="380" y2="280" stroke="#c8f000" stroke-width=".8" opacity=".4"/>
+      <!-- Frame top tube -->
+      <line x1="155" y1="180" x2="330" y2="150" stroke="#c8f000" stroke-width="2.5"/>
+      <!-- Down tube -->
+      <line x1="330" y1="150" x2="155" y2="280" stroke="#c8f000" stroke-width="2.5"/>
+      <!-- Seat tube -->
+      <line x1="155" y1="180" x2="155" y2="280" stroke="#c8f000" stroke-width="2.5"/>
+      <!-- Chain stay -->
+      <line x1="155" y1="280" x2="130" y2="280" stroke="#c8f000" stroke-width="2"/>
+      <!-- Fork -->
+      <line x1="330" y1="150" x2="380" y2="280" stroke="#c8f000" stroke-width="2.5"/>
+      <!-- Handlebar -->
+      <line x1="330" y1="150" x2="330" y2="120" stroke="#c8f000" stroke-width="2"/>
+      <line x1="315" y1="110" x2="345" y2="110" stroke="#c8f000" stroke-width="2.5"/>
+      <circle cx="315" cy="110" r="5" stroke="#c8f000" stroke-width="1.5" fill="none"/>
+      <circle cx="345" cy="110" r="5" stroke="#c8f000" stroke-width="1.5" fill="none"/>
+      <!-- Seat -->
+      <line x1="155" y1="180" x2="155" y2="148" stroke="#c8f000" stroke-width="2"/>
+      <line x1="140" y1="142" x2="170" y2="142" stroke="#c8f000" stroke-width="3"/>
+      <!-- Chainring -->
+      <circle cx="175" cy="280" r="22" stroke="#c8f000" stroke-width="1.5" fill="none"/>
+      <circle cx="175" cy="280" r="8" fill="#c8f000"/>
+    </svg>
+  </div>
+  <p class="hero-tag">Fixed gear / Single speed</p>
+  <h1 class="hero-title">RIDE<br/><span class="outline">PURE.</span></h1>
+  <p class="hero-sub">No gears. No brakes. No compromise. Built for the streets, engineered for those who demand more from every pedal stroke.</p>
+  <div class="hero-actions">
+    <button class="btn-primary" onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'})">Shop Now</button>
+    <button class="btn-ghost" onclick="document.getElementById('manifesto').scrollIntoView({behavior:'smooth'})">Our Story</button>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Fixed Gear</span><span><b>/</b> Single Speed</span><span>Track Ready</span><span><b>/</b> Street Legal</span>
+    <span>No Compromise</span><span><b>/</b> Pure Ride</span><span>Urban Machine</span><span><b>/</b> Hand Built</span>
+    <span>Fixed Gear</span><span><b>/</b> Single Speed</span><span>Track Ready</span><span><b>/</b> Street Legal</span>
+    <span>No Compromise</span><span><b>/</b> Pure Ride</span><span>Urban Machine</span><span><b>/</b> Hand Built</span>
+  </div>
+</div>
+
+<!-- FEATURED -->
+<section id="shop">
+  <p class="section-label">Featured Builds</p>
+  <h2 class="section-title">This Season</h2>
+  <div class="featured-grid">
+
+    <!-- Product 1 -->
+    <div class="product-card">
+      <div class="product-img">
+        <svg viewBox="0 0 300 300" fill="none">
+          <circle cx="80" cy="200" r="75" stroke="#c8f000" stroke-width="1.5"/>
+          <circle cx="80" cy="200" r="10" fill="#111" stroke="#c8f000" stroke-width="1.5"/>
+          <circle cx="220" cy="200" r="75" stroke="#c8f000" stroke-width="1.5"/>
+          <circle cx="220" cy="200" r="10" fill="#111" stroke="#c8f000" stroke-width="1.5"/>
+          <line x1="98" y1="120" x2="185" y2="100" stroke="#fff" stroke-width="3"/>
+          <line x1="185" y1="100" x2="98" y2="200" stroke="#fff" stroke-width="3"/>
+          <line x1="98" y1="120" x2="98" y2="200" stroke="#fff" stroke-width="3"/>
+          <line x1="185" y1="100" x2="220" y2="200" stroke="#fff" stroke-width="3"/>
+          <line x1="98" y1="200" x2="80" y2="200" stroke="#fff" stroke-width="2"/>
+          <line x1="185" y1="100" x2="185" y2="72" stroke="#fff" stroke-width="2"/>
+          <line x1="172" y1="62" x2="198" y2="62" stroke="#fff" stroke-width="3"/>
+          <line x1="98" y1="120" x2="98" y2="90" stroke="#fff" stroke-width="2"/>
+          <line x1="85" y1="85" x2="112" y2="85" stroke="#fff" stroke-width="3"/>
+          <circle cx="115" cy="200" r="16" stroke="#c8f000" stroke-width="1.5" fill="none"/>
+        </svg>
+        <div class="product-overlay"></div>
+        <div class="add-overlay">Add to Cart</div>
+      </div>
+      <div class="product-info">
+        <span class="product-tag">Best Seller</span>
+        <p class="product-name">VELOX CARBON S1</p>
+        <p class="product-price">$1,290</p>
+      </div>
+    </div>
+
+    <!-- Product 2 -->
+    <div class="product-card">
+      <div class="product-img" style="background:#111;">
+        <svg viewBox="0 0 300 300" fill="none">
+          <circle cx="80" cy="200" r="75" stroke="#fff" stroke-width="1.5"/>
+          <circle cx="80" cy="200" r="10" fill="#0a0a0a" stroke="#fff" stroke-width="1.5"/>
+          <circle cx="220" cy="200" r="75" stroke="#fff" stroke-width="1.5"/>
+          <circle cx="220" cy="200" r="10" fill="#0a0a0a" stroke="#fff" stroke-width="1.5"/>
+          <line x1="98" y1="120" x2="185" y2="100" stroke="#c8f000" stroke-width="3"/>
+          <line x1="185" y1="100" x2="98" y2="200" stroke="#c8f000" stroke-width="3"/>
+          <line x1="98" y1="120" x2="98" y2="200" stroke="#c8f000" stroke-width="3"/>
+          <line x1="185" y1="100" x2="220" y2="200" stroke="#c8f000" stroke-width="3"/>
+          <line x1="98" y1="200" x2="80" y2="200" stroke="#c8f000" stroke-width="2"/>
+          <line x1="185" y1="100" x2="185" y2="72" stroke="#c8f000" stroke-width="2"/>
+          <line x1="172" y1="62" x2="198" y2="62" stroke="#c8f000" stroke-width="3"/>
+          <line x1="98" y1="120" x2="98" y2="90" stroke="#c8f000" stroke-width="2"/>
+          <line x1="85" y1="85" x2="112" y2="85" stroke="#c8f000" stroke-width="3"/>
+          <circle cx="115" cy="200" r="16" stroke="#fff" stroke-width="1.5" fill="none"/>
+        </svg>
+        <div class="product-overlay"></div>
+        <div class="add-overlay">Add to Cart</div>
+      </div>
+      <div class="product-info">
+        <span class="product-tag">New Drop</span>
+        <p class="product-name">TRACK PRO NOIR</p>
+        <p class="product-price">$980</p>
+      </div>
+    </div>
+
+    <!-- Product 3 -->
+    <div class="product-card">
+      <div class="product-img" style="background:#131313;">
+        <svg viewBox="0 0 300 300" fill="none">
+          <circle cx="80" cy="200" r="75" stroke="#888" stroke-width="1.5"/>
+          <circle cx="80" cy="200" r="10" fill="#0a0a0a" stroke="#888" stroke-width="1.5"/>
+          <circle cx="220" cy="200" r="75" stroke="#888" stroke-width="1.5"/>
+          <circle cx="220" cy="200" r="10" fill="#0a0a0a" stroke="#888" stroke-width="1.5"/>
+          <line x1="98" y1="120" x2="185" y2="100" stroke="#c8f000" stroke-width="3"/>
+          <line x1="185" y1="100" x2="98" y2="200" stroke="#c8f000" stroke-width="3"/>
+          <line x1="98" y1="120" x2="98" y2="200" stroke="#c8f000" stroke-width="3"/>
+          <line x1="185" y1="100" x2="220" y2="200" stroke="#c8f000" stroke-width="3"/>
+          <line x1="98" y1="200" x2="80" y2="200" stroke="#c8f000" stroke-width="2"/>
+          <line x1="185" y1="100" x2="185" y2="72" stroke="#c8f000" stroke-width="2"/>
+          <line x1="172" y1="62" x2="198" y2="62" stroke="#c8f000" stroke-width="3"/>
+          <line x1="98" y1="120" x2="98" y2="90" stroke="#c8f000" stroke-width="2"/>
+          <line x1="85" y1="85" x2="112" y2="85" stroke="#c8f000" stroke-width="3"/>
+          <circle cx="115" cy="200" r="16" stroke="#888" stroke-width="1.5" fill="none"/>
+        </svg>
+        <div class="product-overlay"></div>
+        <div class="add-overlay">Add to Cart</div>
+      </div>
+      <div class="product-info">
+        <span class="product-tag">Limited</span>
+        <p class="product-name">STREET GHOST</p>
+        <p class="product-price">$750</p>
+      </div>
+    </div>
+
+    <!-- Product 4 -->
+    <div class="product-card">
+      <div class="product-img" style="background:#0d0d0d;">
+        <svg viewBox="0 0 300 300" fill="none">
+          <circle cx="80" cy="200" r="75" stroke="#c8f000" stroke-width="2"/>
+          <circle cx="80" cy="200" r="10" fill="#0a0a0a" stroke="#c8f000" stroke-width="2"/>
+          <circle cx="220" cy="200" r="75" stroke="#c8f000" stroke-width="2"/>
+          <circle cx="220" cy="200" r="10" fill="#0a0a0a" stroke="#c8f000" stroke-width="2"/>
+          <line x1="98" y1="120" x2="185" y2="100" stroke="#c8f000" stroke-width="4"/>
+          <line x1="185" y1="100" x2="98" y2="200" stroke="#c8f000" stroke-width="4"/>
+          <line x1="98" y1="120" x2="98" y2="200" stroke="#c8f000" stroke-width="4"/>
+          <line x1="185" y1="100" x2="220" y2="200" stroke="#c8f000" stroke-width="4"/>
+          <line x1="98" y1="200" x2="80" y2="200" stroke="#c8f000" stroke-width="2.5"/>
+          <line x1="185" y1="100" x2="185" y2="72" stroke="#c8f000" stroke-width="2.5"/>
+          <line x1="172" y1="62" x2="198" y2="62" stroke="#c8f000" stroke-width="4"/>
+          <line x1="98" y1="120" x2="98" y2="90" stroke="#c8f000" stroke-width="2.5"/>
+          <line x1="85" y1="85" x2="112" y2="85" stroke="#c8f000" stroke-width="4"/>
+          <circle cx="115" cy="200" r="16" stroke="#c8f000" stroke-width="2" fill="none"/>
+        </svg>
+        <div class="product-overlay"></div>
+        <div class="add-overlay">Add to Cart</div>
+      </div>
+      <div class="product-info">
+        <span class="product-tag">Flagship</span>
+        <p class="product-name">APEX TITANIUM</p>
+        <p class="product-price">$2,100</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section id="categories" class="categories">
+  <p class="section-label">Build Your Ride</p>
+  <h2 class="section-title">Shop by Category</h2>
+  <div class="cat-grid">
+    <div class="cat-card">
+      <p class="cat-num">01</p>
+      <p class="cat-name">Complete Bikes</p>
+      <p class="cat-count">12 models</p>
+    </div>
+    <div class="cat-card">
+      <p class="cat-num">02</p>
+      <p class="cat-name">Frames</p>
+      <p class="cat-count">8 options</p>
+    </div>
+    <div class="cat-card">
+      <p class="cat-num">03</p>
+      <p class="cat-name">Wheelsets</p>
+      <p class="cat-count">16 sets</p>
+    </div>
+    <div class="cat-card">
+      <p class="cat-num">04</p>
+      <p class="cat-name">Components</p>
+      <p class="cat-count">50+ parts</p>
+    </div>
+    <div class="cat-card">
+      <p class="cat-num">05</p>
+      <p class="cat-name">Accessories</p>
+      <p class="cat-count">30 items</p>
+    </div>
+  </div>
+</section>
+
+<!-- MANIFESTO -->
+<section id="manifesto" class="manifesto">
+  <p class="section-label">Why Fixed</p>
+  <h2 class="section-title">The Philosophy</h2>
+  <div class="manifesto-inner">
+    <div class="manifesto-text">
+      <p>Fixed gear riding is not a trend. It is a <strong>discipline</strong>. When you strip away the gears, the cables, the complexity, you are left with something pure — just you, your legs, and the road.</p>
+      <p>Every VELOX bike is designed with a single principle: <strong>nothing that does not need to be there</strong>. Light. Responsive. Honest.</p>
+      <p>We source the finest chromoly and carbon, build by hand, and ship to riders who understand that the best feeling in cycling is a perfectly balanced fixed gear on a clear stretch of tarmac.</p>
+    </div>
+    <div class="manifesto-visual">
+      <div class="stat-row">
+        <p class="stat-label">Bikes Shipped</p>
+        <p class="stat-num">12K+</p>
+      </div>
+      <div class="stat-row">
+        <p class="stat-label">Frame Weight</p>
+        <p class="stat-num">1.2kg</p>
+      </div>
+      <div class="stat-row">
+        <p class="stat-label">Countries</p>
+        <p class="stat-num">38</p>
+      </div>
+      <div class="stat-row">
+        <p class="stat-label">Warranty</p>
+        <p class="stat-num">5yr</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <p class="section-label">Riders</p>
+  <h2 class="section-title">What They Say</h2>
+  <div class="testi-grid">
+    <div class="testi-card">
+      <div class="testi-rating"><div class="testi-dot"></div><div class="testi-dot"></div><div class="testi-dot"></div><div class="testi-dot"></div><div class="testi-dot"></div></div>
+      <p class="testi-quote">"The Carbon S1 completely changed how I experience the city. Stiff, aggressive, and turns heads every single block. Best investment I have made."</p>
+      <p class="testi-author">Marcus T.</p>
+      <p class="testi-city">Berlin, Germany</p>
+    </div>
+    <div class="testi-card">
+      <div class="testi-rating"><div class="testi-dot"></div><div class="testi-dot"></div><div class="testi-dot"></div><div class="testi-dot"></div><div class="testi-dot"></div></div>
+      <p class="testi-quote">"Ordered the Street Ghost on a Friday, was riding it by Tuesday. Build quality is insane for the price point. The geometry is dialed perfectly for urban riding."</p>
+      <p class="testi-author">Kenji R.</p>
+      <p class="testi-city">Tokyo, Japan</p>
+    </div>
+    <div class="testi-card">
+      <div class="testi-rating"><div class="testi-dot"></div><div class="testi-dot"></div><div class="testi-dot"></div><div class="testi-dot"></div><div class="testi-dot"></div></div>
+      <p class="testi-quote">"Three years in, zero issues. The welds on my frame are flawless. VELOX support actually answered my setup question in under two hours. This brand gets it."</p>
+      <p class="testi-author">Elias M.</p>
+      <p class="testi-city">Amsterdam, Netherlands</p>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section id="contact" class="newsletter">
+  <p class="section-label">Stay Ahead</p>
+  <h2 class="section-title">New Drops. First.</h2>
+  <p>Join the list. Get early access to limited builds, restocks, and rider events.</p>
+  <div class="newsletter-form">
+    <input type="email" placeholder="Your email address"/>
+    <button type="button">Subscribe</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <p class="footer-brand">VEL<span>O</span>X</p>
+      <p class="footer-tagline">Fixed gear bikes and components built for riders who take their craft seriously. No shortcuts.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="#">Complete Bikes</a></li>
+        <li><a href="#">Frames</a></li>
+        <li><a href="#">Wheelsets</a></li>
+        <li><a href="#">Components</a></li>
+        <li><a href="#">Accessories</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Info</h4>
+      <ul>
+        <li><a href="#">Our Story</a></li>
+        <li><a href="#">Sizing Guide</a></li>
+        <li><a href="#">Build Service</a></li>
+        <li><a href="#">Warranty</a></li>
+        <li><a href="#">Dealers</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Shipping</a></li>
+        <li><a href="#">Returns</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Instagram</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>2025 VELOX. All rights reserved.</p>
+    <p>Privacy Policy / Terms</p>
+  </div>
+</footer>
+
+<script>
+  // Scroll animation
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting) e.target.style.opacity = '1', e.target.style.transform = 'translateY(0)';
+    });
+  }, {threshold: 0.1});
+
+  document.querySelectorAll('.product-card, .cat-card, .testi-card, .stat-row').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = 'opacity .5s ease, transform .5s ease';
+    observer.observe(el);
+  });
+
+  // Cart counter
+  let cartCount = 0;
+  document.querySelectorAll('.add-overlay').forEach(btn => {
+    btn.addEventListener('click', () => {
+      cartCount++;
+      document.querySelector('.cart-btn').textContent = `Cart (${cartCount})`;
+    });
+  });
+
+  // Newsletter
+  document.querySelector('.newsletter-form button').addEventListener('click', function() {
+    const inp = document.querySelector('.newsletter-form input');
+    if(inp.value.includes('@')) {
+      this.textContent = 'You\'re In';
+      this.style.background = '#fff';
+      inp.value = '';
+      inp.placeholder = 'See you on the streets.';
+    }
+  });
+</script>
+</body>
+</html>

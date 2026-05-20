@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FileReader()</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Courier New', monospace;
+    background: #0a0a0a;
+    color: #f0f0f0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    border-bottom: 2px solid #00ff88;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    color: #fff;
+  }
+
+  header h1 span { color: #00ff88; }
+
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid #222;
+    padding: 0 2rem;
+  }
+
+  .tab {
+    padding: 0.85rem 1.5rem;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    background: none;
+    color: #555;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .tab.active {
+    color: #00ff88;
+    border-bottom-color: #00ff88;
+  }
+
+  .tab:hover:not(.active) { color: #aaa; }
+
+  .panel {
+    display: none;
+    flex: 1;
+    padding: 2rem;
+    gap: 2rem;
+  }
+
+  .panel.active { display: flex; flex-direction: column; }
+
+  .upload-zone {
+    border: 1.5px dashed #333;
+    border-radius: 4px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    background: #111;
+  }
+
+  .upload-zone:hover { border-color: #00ff88; background: #0d1a12; }
+  .upload-zone.drag-over { border-color: #00ff88; background: #0d1a12; }
+
+  .upload-zone input[type="file"] { display: none; }
+
+  .upload-icon {
+    width: 48px; height: 48px;
+    border: 1.5px solid #333;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    color: #555;
+    flex-shrink: 0;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .upload-zone:hover .upload-icon { border-color: #00ff88; color: #00ff88; }
+
+  .upload-label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .upload-label strong {
+    font-size: 0.9rem;
+    color: #00ff88;
+    letter-spacing: 0.05em;
+  }
+
+  .upload-label span {
+    font-size: 0.75rem;
+    color: #555;
+    letter-spacing: 0.03em;
+  }
+
+  .filename-badge {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: #00ff88;
+    background: #0d1a12;
+    border: 1px solid #00ff8844;
+    padding: 0.3rem 0.75rem;
+    border-radius: 2px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: none;
+  }
+
+  .result-area {
+    flex: 1;
+    border: 1px solid #1a1a1a;
+    border-radius: 4px;
+    background: #0d0d0d;
+    padding: 1.5rem;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .placeholder {
+    text-align: center;
+    color: #2a2a2a;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .placeholder div { font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.3; }
+
+  #image-result img {
+    max-width: 100%;
+    max-height: 500px;
+    border: 1px solid #222;
+    border-radius: 2px;
+    display: block;
+  }
+
+  #excel-result {
+    width: 100%;
+    overflow-x: auto;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+  }
+
+  thead tr {
+    background: #111;
+    border-bottom: 2px solid #00ff88;
+  }
+
+  th {
+    padding: 0.6rem 1rem;
+    text-align: left;
+    color: #00ff88;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.55rem 1rem;
+    border-bottom: 1px solid #151515;
+    color: #ccc;
+    white-space: nowrap;
+  }
+
+  tbody tr:hover td { background: #111; color: #fff; }
+
+  tbody tr:nth-child(even) td { background: #0a0a0a; }
+
+  .row-num {
+    color: #333 !important;
+    font-size: 0.7rem;
+    user-select: none;
+    width: 2rem;
+  }
+
+  .error-msg {
+    color: #ff4455;
+    font-size: 0.8rem;
+    padding: 1rem;
+    border: 1px solid #ff445533;
+    border-radius: 4px;
+    background: #1a0a0c;
+  }
+
+  .sheet-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .sheet-tab {
+    padding: 0.3rem 0.75rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border: 1px solid #222;
+    background: #111;
+    color: #555;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+    font-family: 'Courier New', monospace;
+  }
+
+  .sheet-tab.active { background: #0d1a12; border-color: #00ff88; color: #00ff88; }
+  .sheet-tab:hover:not(.active) { color: #aaa; border-color: #333; }
+
+  .stats-bar {
+    display: flex;
+    gap: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background: #080808;
+    border: 1px solid #151515;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #444;
+  }
+
+  .stats-bar span { color: #666; }
+  .stats-bar span strong { color: #00ff88; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>File<span>Reader</span>()</h1>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('image')">▤ Зураг</button>
+  <button class="tab" onclick="switchTab('excel')">⊞ Excel</button>
+</div>
+
+<!-- IMAGE PANEL -->
+<div id="panel-image" class="panel active">
+  <div class="upload-zone" id="img-zone" onclick="document.getElementById('img-input').click()"
+       ondragover="handleDragOver(event,'img-zone')"
+       ondragleave="handleDragLeave(event,'img-zone')"
+       ondrop="handleDrop(event,'image')">
+    <input type="file" id="img-input" accept="image/*" onchange="handleImageUpload(this)">
+    <div class="upload-icon">↑</div>
+    <div class="upload-label">
+      <strong>Зураг сонгох</strong>
+      <span>PNG, JPG, GIF, WEBP · Drag & drop</span>
+    </div>
+    <div class="filename-badge" id="img-filename"></div>
+  </div>
+
+  <div class="result-area" id="image-result">
+    <div class="placeholder">
+      <div>🖼</div>
+      Зураг upload хийгээгүй байна
+    </div>
+  </div>
+</div>
+
+<!-- EXCEL PANEL -->
+<div id="panel-excel" class="panel">
+  <div class="upload-zone" id="xl-zone" onclick="document.getElementById('xl-input').click()"
+       ondragover="handleDragOver(event,'xl-zone')"
+       ondragleave="handleDragLeave(event,'xl-zone')"
+       ondrop="handleDrop(event,'excel')">
+    <input type="file" id="xl-input" accept=".xlsx,.xls,.csv" onchange="handleExcelUpload(this)">
+    <div class="upload-icon">↑</div>
+    <div class="upload-label">
+      <strong>Excel / CSV сонгох</strong>
+      <span>.xlsx · .xls · .csv · Drag & drop</span>
+    </div>
+    <div class="filename-badge" id="xl-filename"></div>
+  </div>
+
+  <div id="excel-stats" class="stats-bar" style="display:none">
+    <span>Мөр: <strong id="stat-rows">0</strong></span>
+    <span>Багана: <strong id="stat-cols">0</strong></span>
+    <span>Хуудас: <strong id="stat-sheets">0</strong></span>
+  </div>
+
+  <div class="result-area" id="excel-result">
+    <div class="placeholder">
+      <div>📊</div>
+      Excel файл upload хийгээгүй байна
+    </div>
+  </div>
+</div>
+
+<script>
+let workbook = null;
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['image','excel'][i] === name));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+function handleDragOver(e, zoneId) {
+  e.preventDefault();
+  document.getElementById(zoneId).classList.add('drag-over');
+}
+
+function handleDragLeave(e, zoneId) {
+  document.getElementById(zoneId).classList.remove('drag-over');
+}
+
+function handleDrop(e, type) {
+  e.preventDefault();
+  const zoneId = type === 'image' ? 'img-zone' : 'xl-zone';
+  document.getElementById(zoneId).classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  if (type === 'image') processImage(file);
+  else processExcel(file);
+}
+
+function handleImageUpload(input) {
+  if (input.files && input.files[0]) processImage(input.files[0]);
+}
+
+function handleExcelUpload(input) {
+  if (input.files && input.files[0]) processExcel(input.files[0]);
+}
+
+function processImage(file) {
+  if (!file.type.startsWith('image/')) {
+    showError('image-result', 'Зөвхөн зураг файл сонгоно уу.');
+    return;
+  }
+  document.getElementById('img-filename').textContent = file.name;
+  document.getElementById('img-filename').style.display = 'block';
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const el = document.getElementById('image-result');
+    el.innerHTML = '';
+    el.style.alignItems = 'center';
+    el.style.justifyContent = 'center';
+    const img = document.createElement('img');
+    img.src = e.target.result;
+    img.alt = file.name;
+    el.appendChild(img);
+  };
+  reader.readAsDataURL(file);
+}
+
+function processExcel(file) {
+  document.getElementById('xl-filename').textContent = file.name;
+  document.getElementById('xl-filename').style.display = 'block';
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      workbook = XLSX.read(e.target.result, { type: 'array' });
+      const sheets = workbook.SheetNames;
+      document.getElementById('stat-sheets').textContent = sheets.length;
+      document.getElementById('excel-stats').style.display = 'flex';
+      renderSheetTabs(sheets);
+      renderSheet(sheets[0]);
+    } catch(err) {
+      showError('excel-result', 'Файл уншихад алдаа гарлаа: ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function renderSheetTabs(sheets) {
+  const el = document.getElementById('excel-result');
+  el.style.alignItems = 'flex-start';
+  el.style.justifyContent = 'flex-start';
+  el.innerHTML = '';
+
+  if (sheets.length > 1) {
+    const tabsDiv = document.createElement('div');
+    tabsDiv.className = 'sheet-tabs';
+    tabsDiv.id = 'sheet-tabs';
+    sheets.forEach((name, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'sheet-tab' + (i === 0 ? ' active' : '');
+      btn.textContent = name;
+      btn.onclick = () => {
+        document.querySelectorAll('.sheet-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        renderSheet(name);
+      };
+      tabsDiv.appendChild(btn);
+    });
+    el.appendChild(tabsDiv);
+  }
+}
+
+function renderSheet(sheetName) {
+  const ws = workbook.Sheets[sheetName];
+  const data = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+
+  const el = document.getElementById('excel-result');
+  const oldTable = el.querySelector('.table-wrap');
+  if (oldTable) oldTable.remove();
+
+  if (!data || data.length === 0) {
+    const wrap = document.createElement('div');
+    wrap.className = 'table-wrap';
+    wrap.innerHTML = '<div class="placeholder"><div>📭</div>Өгөгдөл олдсонгүй</div>';
+    el.appendChild(wrap);
+    return;
+  }
+
+  // Find last column index that has any data
+  let maxCol = 0;
+  data.forEach(row => {
+    for (let i = row.length - 1; i >= 0; i--) {
+      if (row[i] !== '' && row[i] !== null && row[i] !== undefined) {
+        if (i > maxCol) maxCol = i;
+        break;
+      }
+    }
+  });
+
+  // Find last row that has any data
+  let lastRow = data.length - 1;
+  while (lastRow > 0) {
+    const row = data[lastRow];
+    if (row.some(c => c !== '' && c !== null && c !== undefined)) break;
+    lastRow--;
+  }
+
+  const trimmedData = data.slice(0, lastRow + 1).map(row => row.slice(0, maxCol + 1));
+  const headers = trimmedData[0];
+  const rows = trimmedData.slice(1);
+
+  document.getElementById('stat-rows').textContent = rows.length;
+  document.getElementById('stat-cols').textContent = headers.length;
+
+  const wrap = document.createElement('div');
+  wrap.className = 'table-wrap';
+  wrap.style.width = '100%';
+  wrap.style.overflowX = 'auto';
+
+  const table = document.createElement('table');
+
+  const thead = document.createElement('thead');
+  const hr = document.createElement('tr');
+  const th0 = document.createElement('th');
+  th0.className = 'row-num';
+  th0.textContent = '#';
+  hr.appendChild(th0);
+  headers.forEach(h => {
+    const th = document.createElement('th');
+    th.textContent = h !== '' ? h : '—';
+    hr.appendChild(th);
+  });
+  thead.appendChild(hr);
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  rows.forEach((row, i) => {
+    const tr = document.createElement('tr');
+    const td0 = document.createElement('td');
+    td0.className = 'row-num';
+    td0.textContent = i + 1;
+    tr.appendChild(td0);
+    headers.forEach((_, ci) => {
+      const td = document.createElement('td');
+      td.textContent = row[ci] !== undefined ? row[ci] : '';
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+
+  wrap.appendChild(table);
+  el.appendChild(wrap);
+}
+
+function showError(containerId, msg) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '<div class="error-msg">⚠ ' + msg + '</div>';
+}
+</script>
+</body>
+</html>

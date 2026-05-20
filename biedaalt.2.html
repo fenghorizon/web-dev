@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Watch4You — Fixed Gear Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f5f2ee; --bg2: #edeae4; --ink: #1a1a1a; --ink2: #4a4744;
+    --accent: #b85c2a; --accent-dark: #8f4420; --white: #fdfcfb;
+    --border: #d6d1c9;
+    --font-h: 'Barlow Condensed', sans-serif;
+    --font-b: 'Inter', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-b); background: var(--bg); color: var(--ink); line-height: 1.6; overflow-x: hidden; }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 1000; opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: rgba(245,242,238,0.93); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border); z-index: 100;
+    padding: 0 5%; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: var(--font-h); font-size: 1.45rem; font-weight: 800;
+    letter-spacing: 0.05em; color: var(--ink); text-decoration: none;
+    text-transform: uppercase; display: flex; align-items: center; gap: 10px;
+  }
+  .logo-icon {
+    width: 30px; height: 30px; border: 2.5px solid var(--accent);
+    border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center;
+  }
+  .logo-icon::after {
+    content: ''; width: 8px; height: 8px;
+    background: var(--accent); border-radius: 50%;
+  }
+  .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.78rem; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--ink2); text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .btn {
+    display: inline-block; padding: 0.55rem 1.4rem;
+    font-family: var(--font-b); font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none;
+    border-radius: 3px; cursor: pointer; transition: all 0.2s; border: none;
+  }
+  .btn-primary { background: var(--accent); color: var(--white); }
+  .btn-primary:hover { background: var(--accent-dark); }
+  .btn-outline { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+  .btn-outline:hover { background: var(--ink); color: var(--white); }
+  .btn-sm { padding: 0.4rem 1rem; font-size: 0.72rem; }
+
+  /* HERO */
+  #home {
+    min-height: 100vh; display: flex; align-items: center;
+    padding: 100px 5% 60px; position: relative; overflow: hidden;
+  }
+  .hero-bg-text {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-h); font-size: clamp(100px,18vw,240px);
+    font-weight: 800; color: rgba(26,26,26,0.04);
+    white-space: nowrap; pointer-events: none; user-select: none;
+  }
+  .hero-inner { max-width: 680px; position: relative; z-index: 1; }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 1.2rem;
+  }
+  .hero-tag::before { content: ''; display: block; width: 24px; height: 1.5px; background: var(--accent); }
+  .hero-title {
+    font-family: var(--font-h); font-size: clamp(3rem,8vw,6rem);
+    font-weight: 800; line-height: 0.95; letter-spacing: -0.01em;
+    text-transform: uppercase; margin-bottom: 1.5rem;
+  }
+  .hero-title em { font-style: normal; color: var(--accent); }
+  .hero-sub { font-size: 1rem; color: var(--ink2); max-width: 420px; margin-bottom: 2.4rem; font-weight: 300; line-height: 1.7; }
+  .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .hero-badge {
+    position: absolute; right: 8%; top: 50%;
+    transform: translateY(-50%) rotate(12deg);
+    width: 110px; height: 110px; border: 2px solid var(--accent);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    text-align: center; font-family: var(--font-h); font-size: 0.72rem;
+    font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent); line-height: 1.4; opacity: 0.55;
+  }
+
+  /* SECTIONS */
+  section { padding: 90px 5%; }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 0.8rem;
+  }
+  .section-label::before { content: ''; display: block; width: 20px; height: 1.5px; background: var(--accent); }
+  .section-title {
+    font-family: var(--font-h); font-size: clamp(2rem,5vw,3.2rem);
+    font-weight: 800; text-transform: uppercase; line-height: 1; margin-bottom: 1.2rem;
+  }
+  hr.divider { border: none; border-top: 1px solid var(--border); }
+
+  /* ABOUT */
+  #about { background: var(--ink); color: var(--white); }
+  #about .section-label { color: var(--accent); }
+  #about .section-label::before { background: var(--accent); }
+  #about .section-title { color: var(--white); }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; margin-top: 3rem; }
+  .about-text p { color: #aaa9a5; font-weight: 300; line-height: 1.8; margin-bottom: 1.2rem; }
+  .about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .stat { border-left: 2px solid var(--accent); padding-left: 1.2rem; }
+  .stat-num { font-family: var(--font-h); font-size: 2.8rem; font-weight: 800; color: var(--white); line-height: 1; }
+  .stat-desc { font-size: 0.78rem; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.3rem; }
+
+  /* PRODUCTS */
+  #products { background: var(--bg); }
+  .products-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+  .filter-row { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .tab {
+    padding: 0.38rem 0.9rem; font-size: 0.72rem; font-weight: 600;
+    letter-spacing: 0.07em; text-transform: uppercase;
+    border: 1.5px solid var(--border); border-radius: 3px;
+    background: transparent; color: var(--ink2); cursor: pointer; transition: all 0.2s;
+  }
+  .tab.active, .tab:hover { background: var(--ink); color: var(--white); border-color: var(--ink); }
+
+  /* Search */
+  .search-wrap { position: relative; margin-bottom: 2rem; max-width: 380px; }
+  .search-wrap input {
+    width: 100%; padding: 0.65rem 1rem 0.65rem 2.6rem;
+    border: 1.5px solid var(--border); border-radius: 3px;
+    background: var(--white); font-family: var(--font-b); font-size: 0.85rem;
+    color: var(--ink); outline: none; transition: border-color 0.2s;
+  }
+  .search-wrap input:focus { border-color: var(--accent); }
+  .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); opacity: 0.4; }
+
+  .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 1.2rem; }
+  .product-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 4px; overflow: hidden;
+    transition: transform 0.22s, box-shadow 0.22s;
+  }
+  .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.08); }
+  .product-img {
+    aspect-ratio: 16/9; background: var(--bg2);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .product-img img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .product-img svg { opacity: 0.2; width: 70px; }
+  .product-stamp {
+    position: absolute; top: 10px; right: 10px;
+    background: var(--accent); color: var(--white);
+    font-family: var(--font-h); font-size: 0.62rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 3px 7px; border-radius: 2px;
+  }
+  .product-body { padding: 1.1rem; }
+  .product-cat { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.25rem; }
+  .product-name { font-family: var(--font-h); font-size: 1.15rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem; }
+  .product-desc { font-size: 0.78rem; color: var(--ink2); font-weight: 300; margin-bottom: 0.9rem; line-height: 1.5; }
+  .product-footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 0.9rem; }
+  .product-price { font-family: var(--font-h); font-size: 1.2rem; font-weight: 700; }
+  .product-price small { font-size: 0.7rem; font-family: var(--font-b); color: var(--ink2); font-weight: 400; display: block; }
+  .no-results { grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--ink2); font-size: 0.9rem; }
+  .products-more {
+    display: flex; justify-content: center; margin-top: 2rem;
+  }
+  .products-more[hidden] { display: none; }
+
+  /* HOW TO ORDER */
+  #how-to-order { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; margin-top: 3rem; position: relative; }
+  .steps-grid::before {
+    content: ''; position: absolute; top: 28px;
+    left: calc(16.6% + 1rem); width: calc(66.6% - 2rem);
+    height: 1px; background: var(--border);
+  }
+  .step { text-align: center; padding: 2rem 1rem; }
+  .step-num {
+    width: 56px; height: 56px; border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.2rem; font-family: var(--font-h); font-size: 1.3rem;
+    font-weight: 800; background: var(--bg2); position: relative; z-index: 1; color: var(--accent);
+  }
+  .step-title { font-family: var(--font-h); font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+  .step-desc { font-size: 0.82rem; color: var(--ink2); font-weight: 300; line-height: 1.6; }
+
+  /* ORDER FORM */
+  #order { background: var(--white); }
+  .order-shell { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.8fr); gap: 1.5rem; margin-top: 2.5rem; align-items: start; }
+  .form-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem;
+    padding: 1.5rem; background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+  .form-group.full { grid-column: 1 / -1; }
+  label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink2); }
+  input, select, textarea {
+    width: 100%;
+    font-family: var(--font-b); font-size: 0.88rem;
+    padding: 0.68rem 2.4rem 0.68rem 0.9rem; border: 1.5px solid var(--border);
+    border-radius: 3px; background: var(--white); color: var(--ink);
+    outline: none; transition: border-color 0.2s;
+  }
+  input, textarea { padding-right: 0.9rem; }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    display: none;
+  }
+  .product-picker select {
+    min-height: 58px; font-size: 1rem; border-width: 2px;
+    background: #fff; box-shadow: 0 8px 22px rgba(0,0,0,0.04);
+  }
+  .qty-picker select { min-height: 50px; }
+  textarea { resize: vertical; min-height: 100px; }
+  .form-submit { grid-column: 1/-1; display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap; }
+  .form-note { font-size: 0.75rem; color: var(--ink2); font-weight: 300; }
+  .order-product-row {
+    grid-column: 1/-1; display: grid; grid-template-columns: minmax(0, 1fr) 130px 180px;
+    gap: 1rem; align-items: end;
+  }
+  .order-product-row .form-group { min-width: 0; }
+  .cart-actions { display: flex; align-items: end; }
+  .cart-actions .btn { width: 100%; text-align: center; padding: 0.86rem 1rem; min-height: 50px; }
+  .order-items {
+    grid-column: 1/-1; background: var(--white); border: 1px solid var(--border);
+    border-radius: 4px; padding: 1rem; display: grid; gap: 0.75rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+  }
+  .order-items-title {
+    font-family: var(--font-h); font-size: 1.05rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .order-items-empty { color: var(--ink2); font-size: 0.82rem; font-weight: 300; }
+  .order-item {
+    display: grid; grid-template-columns: 1fr auto auto; gap: 0.75rem;
+    align-items: center; padding-top: 0.75rem; border-top: 1px solid var(--border);
+    font-size: 0.84rem;
+  }
+  .order-item:first-of-type { border-top: none; padding-top: 0; }
+  .order-item-name { font-weight: 600; }
+  .order-item-meta { color: var(--ink2); font-size: 0.76rem; }
+  .remove-item {
+    background: transparent; color: var(--accent); border: 0; cursor: pointer;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .order-summary {
+    background: var(--bg); color: var(--ink); border: 1px solid var(--border);
+    border-radius: 6px; padding: 1.3rem; position: sticky; top: 84px;
+  }
+  .summary-title { font-family: var(--font-h); font-size: 1.25rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 1rem; }
+  .summary-list { display: grid; gap: 0.75rem; margin-bottom: 1.2rem; }
+  .summary-item { display: flex; gap: 0.7rem; align-items: flex-start; color: var(--ink2); font-size: 0.82rem; line-height: 1.5; }
+  .summary-dot {
+    width: 22px; height: 22px; border-radius: 50%; background: var(--accent);
+    color: var(--white); display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700; flex: 0 0 22px;
+  }
+  .payment-box { border-top: 1px solid var(--border); padding-top: 1rem; }
+  .payment-label { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink2); margin-bottom: 0.45rem; }
+  .payment-value { font-family: var(--font-h); font-size: 1.05rem; font-weight: 700; color: var(--ink); }
+  .payment-small { font-size: 0.76rem; color: var(--ink2); margin-top: 0.25rem; line-height: 1.5; }
+  .summary-link {
+    display: inline-flex; align-items: center; gap: 8px; margin-top: 1rem;
+    color: var(--ink); text-decoration: none; border: 1px solid var(--ink);
+    border-radius: 4px; padding: 0.65rem 0.8rem; font-size: 0.78rem; font-weight: 600;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .summary-link:hover { border-color: var(--accent); color: var(--accent); background: var(--white); }
+  .success-msg {
+    display: none; background: #e8f5e9; border: 1px solid #a5d6a7;
+    border-radius: 3px; padding: 1rem 1.4rem; font-size: 0.85rem; color: #2e7d32;
+    margin-top: 0.5rem; grid-column: 1/-1; align-items: center; gap: 8px;
+  }
+  .success-msg.show { display: flex; }
+  .floating-fb {
+    position: fixed; right: 22px; bottom: 22px; z-index: 250;
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--ink); color: var(--white); text-decoration: none;
+    border: 1px solid var(--accent);
+    border-radius: 999px; padding: 0.82rem 1rem;
+    font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; box-shadow: 0 12px 28px rgba(0,0,0,0.22);
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+  .floating-fb::before {
+    content: 'f'; display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 50%; background: var(--accent);
+    color: var(--white); font-family: Arial, sans-serif; font-size: 1rem; font-weight: 700;
+    text-transform: none;
+  }
+  .floating-fb:hover { transform: translateY(-2px); background: var(--accent-dark); box-shadow: 0 16px 34px rgba(0,0,0,0.26); }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink); color: #888; padding: 3rem 5%;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 1.5rem; border-top: 3px solid var(--accent);
+  }
+  .footer-logo { font-family: var(--font-h); font-size: 1.1rem; font-weight: 800; color: var(--white); text-transform: uppercase; letter-spacing: 0.06em; }
+  .footer-links { display: flex; gap: 1.5rem; list-style: none; }
+  .footer-links a { color: #888; text-decoration: none; font-size: 0.78rem; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--accent); }
+  .footer-social a {
+    display: inline-flex; align-items: center; gap: 8px; color: var(--white);
+    text-decoration: none; font-size: 0.78rem; font-weight: 600;
+    background: #242424; border: 1px solid #333; padding: 0.65rem 0.9rem;
+    border-radius: 4px; transition: border-color 0.2s, background 0.2s;
+  }
+  .footer-social a:hover { border-color: var(--accent); background: #2c2c2c; }
+  .footer-copy { width: 100%; text-align: center; font-size: 0.72rem; border-top: 1px solid #2a2a2a; padding-top: 1.5rem; margin-top: 0.5rem; }
+
+  /* HAMBURGER */
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+  .hamburger span { display: block; width: 22px; height: 2px; background: var(--ink); transition: all 0.2s; }
+
+  @media (max-width: 768px) {
+    .hamburger { display: flex; }
+    .nav-links { display: none; position: absolute; top: 64px; left: 0; right: 0; background: var(--bg); border-bottom: 1px solid var(--border); flex-direction: column; padding: 1.5rem 5%; gap: 1.2rem; }
+    .nav-links.open { display: flex; }
+    .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .steps-grid { grid-template-columns: 1fr; }
+    .steps-grid::before { display: none; }
+    .order-shell { grid-template-columns: 1fr; }
+    .order-summary { position: static; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full { grid-column: 1; }
+    .order-product-row { grid-template-columns: 1fr; }
+    .cart-actions { align-items: stretch; }
+    .order-item { grid-template-columns: 1fr; gap: 0.35rem; }
+    .floating-fb { right: 14px; bottom: 14px; padding: 0.78rem 0.9rem; font-size: 0.72rem; }
+    .hero-badge { display: none; }
+    footer { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#home" class="nav-logo">
+    <div class="logo-icon"></div>
+    Watch4You
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#products">Products</a></li>
+    <li><a href="#how-to-order">How to Order</a></li>
+    <li><a href="#order" class="btn btn-primary">Order Now</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section id="home">
+  <div class="hero-bg-text">FIXED</div>
+  <div class="hero-inner">
+    <div class="hero-tag">Ulaanbaatar, Mongolia — Est. 2025</div>
+    <h1 class="hero-title">Your <em>Build.</em><br>Your Ride.</h1>
+    <p class="hero-sub">Premium fixed gear frames, parts, and complete builds. Watch4You has everything you need to build the perfect street machine in UB.</p>
+    <div class="hero-cta">
+      <a href="#products" class="btn btn-primary">Browse Products</a>
+      <a href="#order" class="btn btn-outline">Place an Order</a>
+    </div>
+  </div>
+  <div class="hero-badge">Est.<br>Aug<br>2025<br>UB</div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">Who We Are</div>
+  <h2 class="section-title">Built for Riders</h2>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>Watch4You launched in August 2025 with one goal — bring the best fixed gear parts and frames to Mongolian riders. From entry-level complete builds to high-end carbon framesets, we source quality gear so you can build the whip you actually want.</p>
+      <p>Whether you are after a budget daily rider or a full carbon track machine, we have got the parts and the knowledge to get you rolling right in Ulaanbaatar.</p>
+      <a href="#products" class="btn btn-primary" style="margin-top:0.5rem;">See All Products</a>
+    </div>
+    <div class="about-stats">
+      <div class="stat"><div class="stat-num">60+</div><div class="stat-desc">Products</div></div>
+      <div class="stat"><div class="stat-num">2025</div><div class="stat-desc">Est. August</div></div>
+      <div class="stat"><div class="stat-num">UB</div><div class="stat-desc">Based & Local</div></div>
+      <div class="stat"><div class="stat-num">FB</div><div class="stat-desc">Find Us Online</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="products-header">
+    <div>
+      <div class="section-label">Our Lineup</div>
+      <h2 class="section-title">Parts & Frames</h2>
+    </div>
+  </div>
+  <div class="search-wrap">
+    <svg width="16" height="16" fill="none" stroke="#1a1a1a" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="searchInput" placeholder="Search products..." oninput="handleSearch()"/>
+  </div>
+  <div class="filter-row" id="filterRow" style="margin-bottom:2rem;"></div>
+  <div class="products-grid" id="productsGrid"></div>
+  <div class="products-more" id="productsMore">
+    <button class="btn btn-outline" type="button" onclick="showMoreProducts()">Show More Products</button>
+  </div>
+</section>
+
+<!-- HOW TO ORDER -->
+<section id="how-to-order">
+  <div class="section-label">Simple Process</div>
+  <h2 class="section-title">How to Order</h2>
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-title">Browse & Pick</div>
+      <p class="step-desc">Look through our parts and frames above. Use the search or category filters to find exactly what you need.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-title">Fill the Form</div>
+      <p class="step-desc">Scroll down and complete the order form carefully. Select your product from the dropdown and double-check your contact details.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-title">We Confirm</div>
+      <p class="step-desc">We will reach out to you on Facebook or by phone to confirm your order, arrange payment, and organize delivery.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ORDER FORM -->
+<section id="order">
+  <div class="section-label">Place Your Order</div>
+  <h2 class="section-title">Order Form</h2>
+  <p style="color:var(--ink2);font-size:0.85rem;font-weight:300;margin-top:0.5rem;max-width:560px;">Choose your product, leave your contact, and we will confirm price, stock, and payment before the order is finalized.</p>
+  <div class="order-shell">
+    <div class="form-grid" id="orderForm">
+      <div class="form-group">
+        <label for="fname">First Name</label>
+        <input type="text" id="fname" placeholder="Munkh"/>
+      </div>
+      <div class="form-group">
+        <label for="lname">Last Name</label>
+        <input type="text" id="lname" placeholder="Bayar"/>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" placeholder="+976 9900 0000"/>
+      </div>
+      <div class="form-group">
+        <label for="fb">Facebook Name</label>
+        <input type="text" id="fb" placeholder="Optional"/>
+      </div>
+      <div class="order-product-row">
+        <div class="form-group product-picker">
+          <label for="product">Product</label>
+          <div class="select-wrap">
+            <select id="productSelect"></select>
+          </div>
+        </div>
+        <div class="form-group qty-picker">
+          <label for="qty">Quantity</label>
+          <div class="select-wrap">
+            <select id="qty">
+              <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group cart-actions">
+          <button class="btn btn-outline" type="button" onclick="addOrderItem()">Add Item</button>
+        </div>
+      </div>
+      <div class="order-items" id="orderItemsBox">
+        <div class="order-items-title">Items in this order</div>
+        <div class="order-items-empty">No items added yet. Select a product and press Add Item.</div>
+      </div>
+      <div class="form-group">
+        <label for="delivery">Receive</label>
+        <div class="select-wrap">
+          <select id="delivery">
+            <option>Pickup in UB</option>
+            <option>Delivery in UB</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group full">
+        <label for="payment">Payment</label>
+        <div class="select-wrap">
+          <select id="payment">
+            <option>Pay after confirmation</option>
+            <option>Bank transfer</option>
+            <option>Cash on pickup</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group full">
+        <label for="notes">Notes</label>
+        <textarea id="notes" placeholder="Color, size, wheel option, delivery address, or anything we should confirm..."></textarea>
+      </div>
+      <div class="form-submit">
+        <button class="btn btn-primary" onclick="submitOrder()" style="padding:0.7rem 2rem;font-size:0.85rem;">Send Order</button>
+        <p class="form-note">No payment is required before we confirm availability.</p>
+      </div>
+      <div class="success-msg" id="successMsg">
+        Order sent. We will confirm by phone or Facebook.
+      </div>
+    </div>
+    <aside class="order-summary">
+      <div class="summary-title">Easy Checkout</div>
+      <div class="summary-list">
+        <div class="summary-item"><span class="summary-dot">1</span><span>Select products, quantities, and add them to one order.</span></div>
+        <div class="summary-item"><span class="summary-dot">2</span><span>Add contact info and preferred pickup or delivery.</span></div>
+        <div class="summary-item"><span class="summary-dot">3</span><span>We confirm stock, final price, and payment details.</span></div>
+      </div>
+      <div class="payment-box">
+        <div class="payment-label">Payment</div>
+        <div class="payment-value">Confirm first, pay after</div>
+        <div class="payment-small">Bank transfer or cash pickup can be arranged after we contact you.</div>
+      </div>
+      <a class="summary-link" href="https://www.facebook.com/profile.php?id=61577640685950" target="_blank" rel="noopener">
+        Message on Facebook
+      </a>
+    </aside>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Watch4You</div>
+  <ul class="footer-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#products">Products</a></li>
+    <li><a href="#how-to-order">How to Order</a></li>
+    <li><a href="#order">Order</a></li>
+  </ul>
+  <div class="footer-social">
+    <a href="https://www.facebook.com/profile.php?id=61577640685950" target="_blank" rel="noopener">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+      Watch4You on Facebook
+    </a>
+  </div>
+  <div class="footer-copy">&copy; 2025 Watch4You. All rights reserved. Ulaanbaatar, Mongolia.</div>
+</footer>
+
+<a class="floating-fb" href="https://www.facebook.com/profile.php?id=61577640685950" target="_blank" rel="noopener">Facebook</a>
+
+<script>
+// ── DATA ──
+const products = [
+  // CRANKSETS
+  { id:1, cat:'Cranksets', name:'KEOS Crankset', desc:'44T - 56T options available. Solid alloy build for street riding.', price:'150,000 - 220,000₮', tag:null, images:['keoscrankset.jpg'] },
+  { id:2, cat:'Cranksets', name:'PROWHEEL DMA Crankset', desc:'40T - 58T range. Durable and reliable for daily use.', price:'190,000 - 235,000₮', tag:null, images:['prowheelcrankset.jpg'] },
+  { id:3, cat:'Cranksets', name:'SKEACE Crankset', desc:'Two variants available. Clean aesthetic with quality machining.', price:'195,000 - 199,000₮', tag:null, images:['skeacecrankset.jpg'] },
+  { id:4, cat:'Cranksets', name:'SKEACE CARBON Crankset', desc:'Lightweight full carbon crankset for serious riders.', price:'535,000₮', tag:'Premium', images:['skeacecarboncrankset.jpg'] },
+  // COGS & CHAINS
+  { id:6, cat:'Cogs & Chains', name:'SKEACE Cog + Lock', desc:'14T - 18T options. Quality finish with lock included.', price:'64,000₮', tag:null, images:['skeacecog+lock.jpg'] },
+  { id:7, cat:'Cogs & Chains', name:'No Brand Cog + Lock', desc:'13T-18T: 33,500₮ | 20T: 38,500₮ | Lock only: 15,000₮. Budget-friendly option.', price:'15,000 - 38,500₮', tag:null, images:['nobrand cog+lock.jpg'] },
+  { id:8, cat:'Cogs & Chains', name:'Olive Chain', desc:'Stylish olive-finish single speed chain.', price:'20,000₮', tag:null, images:['olive chain.jpg'] },
+  { id:9, cat:'Cogs & Chains', name:'Izumi Chain', desc:'Premium Japanese-made track chain. Known for smooth, long-lasting performance.', price:'60,000₮', tag:'Popular', images:['icumichain.jpg'] },
+  // HANDLEBARS
+  { id:10, cat:'Handlebars', name:'RITCHEY Carbon Drop Bar', desc:'Lightweight carbon drop bar for a road-inspired fixed setup.', price:'110,000₮', tag:null, images:['ritcheycarbondrop.jpg'] },
+  { id:11, cat:'Handlebars', name:'Campus Carbon Riser/Flat', desc:'5 color options available. Lightweight carbon bar for street use.', price:'65,000₮', tag:null, images:['campuscarbon.jpg'] },
+  { id:12, cat:'Handlebars', name:'Ardently Riser Bar 780mm', desc:'Wide 780mm riser bar for a more comfortable, stable ride.', price:'110,000₮', tag:null, images:['ardentlyriserbar780.jpg'] },
+  { id:13, cat:'Handlebars', name:'Cinelli Replica Swallow Riser', desc:'Riser bar inspired by the iconic Cinelli Swallow design.', price:'80,000₮', tag:null, images:['cinellireplicaswallowriserbar.jpg'] },
+  { id:14, cat:'Handlebars', name:'Cinelli Aircraft Bullhorn', desc:'Aggressive bullhorn shape for speed-oriented street builds.', price:'100,000₮', tag:null, images:['cinelliaircraftbullhorn.jpg'] },
+  { id:20, cat:'Handlebars', name:'5-Color Tag', desc:'Colorful handlebar tag / bar end. 5 color choices.', price:'15,000₮', tag:null, images:['5ungiintag.jpg'] },
+  // STEMS
+  { id:22, cat:'Stems', name:'UNO Bicycle Stem', desc:'Standard UNO stem. Reliable and affordable.', price:'70,000₮', tag:null, images:['unobicyclestem.jpg'] },
+  // SEATPOSTS & SADDLES
+  { id:23, cat:'Seatpost & Saddle', name:'Skeace Seatpost', desc:'Clean alloy seatpost compatible with most track frames.', price:'80,000₮', tag:null, images:['skeaceseatpost.jpg'] },
+  { id:24, cat:'Seatpost & Saddle', name:'UNOUN Seatpost', desc:'Lightweight seatpost for fixed gear builds.', price:'32,500₮', tag:null, images:['UNOUN Seatpost.jpg'] },
+  // WHEELS
+  { id:26, cat:'Wheels', name:'Master Silver Wheel', desc:'Single: 170,000₮ | Pair: 190,000₮. Classic silver finish track wheels.', price:'170,000 - 190,000₮', tag:null, images:['master silver wheel.jpg'] },
+  { id:27, cat:'Wheels', name:'Vintage Silver Wheels', desc:'Sold as a pair. Retro silver finish with a classic track look.', price:'350,000₮', tag:null, images:['vintagesilverwheel.jpg'] },
+  { id:29, cat:'Wheels', name:'Campus Carbon 10mm Spacer', desc:'Carbon wheel spacer. Sold individually.', price:'5,000₮', tag:null, images:['campus corbon 10mmspacer.jpg'] },
+  // TIRES & STRAPS
+  { id:31, cat:'Tires & Straps', name:'Foot Strap (Thick)', desc:'Single: 27,000₮ | Pair: 54,000₮. Heavy-duty straps for fixed riding.', price:'27,000 - 54,000₮', tag:null, images:['strap.jpg'] },
+  // FORKS
+  { id:32, cat:'Forks', name:'Carbon Fork', desc:'Lightweight carbon fork for most 700c fixed gear frames.', price:'140,000₮', tag:null, images:['crbonfork.jpg'] },
+  // HELMETS
+  { id:33, cat:'Helmets', name:'Giro Aerohead MIPS II Helmet', desc:'Top-tier aero helmet with MIPS protection system. For the serious rider.', price:'2,500,000₮', tag:'Premium', images:['Giro Aerohead Mips II Helmet.jpg'] },
+  // COMPLETE BIKES
+  { id:34, cat:'Framesets & Complete Bikes', name:'Mini Fixie', desc:'Compact fixed gear bike. Great starter or fun city bike.', price:'400,000₮', tag:null, images:['miinifixie.jpg'] },
+  // TSUNAMI
+  { id:35, cat:'Tsunami', name:'Tsunami SNM100', desc:'Available in black, green, white, yellow, matte green, and gray. Complete Tsunami build.', price:'780,000₮', tag:'Popular', images:['tsunamisnm100.jpg','tsunamisnm100green.jpg','tsunamisnm100white.jpg','tsunamisnm100yellow.jpg','tsunamisnm100mategreen.jpg','tsunamisnm100gray.jpg'] },
+  { id:36, cat:'Tsunami', name:'Tsunami SNM200', desc:'Choose 40mm, 70mm, or 90mm wheel pair options, with 3-spoke upgrade available.', price:'1,022,000 - 1,145,000₮', tag:null, images:['tsunamisnm200.jpg'] },
+  { id:42, cat:'Tsunami', name:'Tsunami SNM300', desc:'Choose 30mm, 40mm, or 70mm wheel options, including Legend, red, blue, and yellow builds.', price:'970,000 - 1,100,000₮', tag:'Premium', images:['tsunamisnm300.jpg'] },
+  { id:47, cat:'Tsunami', name:'Tsunami SNM4130 Frameset', desc:'4130 chromoly steel Tsunami frame. Light, strong, and classic.', price:'450,000₮', tag:null, images:['tsunami4130.jpg'] },
+  // FRAMES
+  { id:48, cat:'Framesets & Complete Bikes', name:'Liberty Gray Rain F17', desc:'Clean colorway complete Liberty fixed gear.', price:'965,000₮', tag:null, images:['gray.jpg'] },
+  { id:49, cat:'Framesets & Complete Bikes', name:'JIXF Mettler 725', desc:'Quality fixed gear frameset.', price:'830,000₮', tag:null, images:['mettler725.jpg'] },
+  { id:50, cat:'Framesets & Complete Bikes', name:'JIXF Mettler 700', desc:'Compact Mettler frameset.', price:'820,000₮', tag:null, images:['mettler700.jpg'] },
+  { id:51, cat:'Framesets & Complete Bikes', name:'Aventon Cordoba 1 Speed', desc:'Single speed complete build from Aventon.', price:'1,699,000₮', tag:null, images:['aventon.jpg'] },
+  { id:52, cat:'Framesets & Complete Bikes', name:'ARCHER Frameset', desc:'Responsive, modern geometry track frameset.', price:'1,680,000₮', tag:null, images:['archer frame.jpg'] },
+  { id:53, cat:'Framesets & Complete Bikes', name:'ARDENTLY Frameset', desc:'Lightweight and stiff frameset for aggressive riding. Multiple listings available.', price:'800,000 - 1,360,000₮', tag:null, images:['ardently.jpg'] },
+  { id:54, cat:'Framesets & Complete Bikes', name:'SEABOARD Frameset', desc:'Versatile steel track frameset. Smooth ride quality.', price:'1,500,000₮', tag:null, images:['seaboardframese.jpg'] },
+  { id:55, cat:'Framesets & Complete Bikes', name:'Just Cheap Fixie', desc:'Budget complete fixed gear bike. Ideal for beginners.', price:'444,000₮', tag:null, images:['cheapbike.jpg'] },
+  { id:56, cat:'Framesets & Complete Bikes', name:'Low Fixie', desc:'Low-slung street fixed gear complete build.', price:'1,020,000₮', tag:null, images:['lowii.jpg'] },
+  { id:57, cat:'Framesets & Complete Bikes', name:'DREW co. District Frameset', desc:'Street-ready geometry with clean aesthetics.', price:'390,000₮', tag:null, images:['DREW co. district fixie.jpg'] },
+  { id:58, cat:'Framesets & Complete Bikes', name:'LUST Frameset (Frame + Carbon Fork)', desc:'Includes carbon fork. Lightweight and aggressive geometry.', price:'1,050,000₮', tag:null, images:['LUST Frameset.jpg'] },
+  { id:60, cat:'Framesets & Complete Bikes', name:'Shuaku Frameset', desc:'Mid-range track frameset with solid geometry.', price:'1,100,000₮', tag:null, images:['shukaku.jpg'] },
+  { id:62, cat:'Framesets & Complete Bikes', name:'Horse Frameset', desc:'Budget steel frameset. Great starting point for a custom build.', price:'355,000₮', tag:null, images:['horseframeset.jpg'] },
+  { id:63, cat:'Framesets & Complete Bikes', name:'Skream Magnum24 Amethyst', desc:'Bold colorway on this track-ready frameset.', price:'2,760,000₮', tag:'Premium', images:['skreammagnum.jpg'] },
+  { id:64, cat:'Framesets & Complete Bikes', name:'Pizz Carton Picker', desc:'Pizz\'s popular versatile build for the streets.', price:'1,720,000₮', tag:null, images:['pizz carton picker.jpg'] },
+  { id:66, cat:'Framesets & Complete Bikes', name:'Cinelli Gazzetta', desc:'Iconic Italian fixed gear from Cinelli. A benchmark in the culture.', price:'4,265,000₮', tag:'Premium', images:['cinelligazzetta.jpg'] },
+  { id:67, cat:'Framesets & Complete Bikes', name:'INGRIA Frame', desc:'High-end track frameset with precise race geometry.', price:'3,250,000₮', tag:'Premium', images:['ingria-frame.jpg'] },
+  { id:76, cat:'Framesets & Complete Bikes', name:'Cinelli Vigorelli Frameset', desc:'Track-ready Cinelli Vigorelli frameset with race-focused geometry.', price:'Ask for price', tag:'Premium', images:['sinelli vigorelli track frame.jpg'] },
+  // ENGINE11
+  { id:70, cat:'Engine11', name:'Engine11 Hunterbros Crit-D', desc:'Hunterbros edition of the Crit-D frameset.', price:'3,270,000₮', tag:null, images:['engine11hunterbros crit-d.jpg'] },
+  { id:71, cat:'Engine11', name:'Engine11 Team Edition', desc:'Team-spec Engine11 frameset. Race-ready geometry.', price:'3,240,000₮', tag:'Premium', images:['engine11teamedition.jpg'] },
+  { id:73, cat:'Engine11', name:'Engine11 Crit-D Track Frameset', desc:'Full track-spec Crit-D. The pinnacle of the Engine11 line.', price:'4,340,000₮', tag:'Premium', images:['engine crit-d track frame.jpg'] },
+  // SPECIAL
+  { id:74, cat:'Special', name:'Pitagora Poloandbike CMNDR', desc:'Extremely rare and collectible. One of a kind piece.', price:'4,643,684,650.57₮', tag:'Rare', images:['pitagora.jpg'] },
+  { id:75, cat:'Special', name:'Look Frameset', desc:'Top-tier Look carbon track frameset. The ultimate flex.', price:'60,000,000₮', tag:'Ultra Premium', images:['lookframeset.jpg'] },
+];
+
+const cats = ['All', ...new Set(products.map(p => p.cat))];
+let activeCat = 'All';
+let showAllProducts = false;
+const productPreviewLimit = 12;
+let orderItems = [];
+
+// Build filter buttons
+const filterRow = document.getElementById('filterRow');
+cats.forEach(c => {
+  const b = document.createElement('button');
+  b.className = 'tab' + (c === 'All' ? ' active' : '');
+  b.textContent = c;
+  b.onclick = () => {
+    activeCat = c;
+    showAllProducts = false;
+    document.querySelectorAll('#filterRow .tab').forEach(t => t.classList.remove('active'));
+    b.classList.add('active');
+    renderProducts();
+  };
+  filterRow.appendChild(b);
+});
+
+// Build order select
+const productSelect = document.getElementById('productSelect');
+productSelect.innerHTML = '<option value="">-- Select a product --</option>';
+cats.filter(c => c !== 'All').forEach(c => {
+  const og = document.createElement('optgroup');
+  og.label = c;
+  products.filter(p => p.cat === c).forEach(p => {
+    const o = document.createElement('option');
+    o.value = p.name;
+    o.textContent = `${p.name} — ${p.price}`;
+    og.appendChild(o);
+  });
+  productSelect.appendChild(og);
+});
+
+const bikeSVG = `<svg viewBox="0 0 100 60" fill="none" stroke="currentColor" stroke-width="2.5" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="42" r="14"/><circle cx="80" cy="42" r="14"/><line x1="20" y1="42" x2="50" y2="14"/><line x1="50" y1="14" x2="80" y2="42"/><line x1="50" y1="14" x2="50" y2="30"/><line x1="50" y1="30" x2="20" y2="42"/><line x1="50" y1="30" x2="80" y2="42"/><line x1="44" y1="14" x2="56" y2="14"/></svg>`;
+const partSVG = `<svg viewBox="0 0 100 60" fill="none" stroke="currentColor" stroke-width="2.5" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="30" r="20"/><circle cx="50" cy="30" r="6"/><line x1="50" y1="10" x2="50" y2="4"/><line x1="50" y1="50" x2="50" y2="56"/><line x1="30" y1="30" x2="24" y2="30"/><line x1="70" y1="30" x2="76" y2="30"/></svg>`;
+const frameSVG = `<svg viewBox="0 0 100 60" fill="none" stroke="currentColor" stroke-width="2.5" xmlns="http://www.w3.org/2000/svg"><circle cx="18" cy="44" r="12"/><circle cx="82" cy="44" r="12"/><polyline points="18,44 38,20 62,20 82,44"/><line x1="62" y1="20" x2="62" y2="44"/><line x1="38" y1="20" x2="18" y2="44"/><line x1="34" y1="20" x2="42" y2="20"/></svg>`;
+
+function getIcon(cat) {
+  if (['Framesets & Complete Bikes','Tsunami','Engine11','Special','Liberty'].includes(cat)) return frameSVG;
+  if (cat === 'Wheels') return `<svg viewBox="0 0 100 60" fill="none" stroke="currentColor" stroke-width="2.5" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="30" r="26"/><circle cx="50" cy="30" r="5"/><line x1="50" y1="4" x2="50" y2="55"/><line x1="24" y1="30" x2="76" y2="30"/><line x1="32" y1="12" x2="68" y2="48"/><line x1="68" y1="12" x2="32" y2="48"/></svg>`;
+  return partSVG;
+}
+
+function renderProducts() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const grid = document.getElementById('productsGrid');
+  const more = document.getElementById('productsMore');
+  let filtered = activeCat === 'All' ? products : products.filter(p => p.cat === activeCat);
+  if (q) filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q));
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="no-results">No products found. Try a different search or category.</div>`;
+    more.hidden = true;
+    return;
+  }
+  const visible = showAllProducts ? filtered : filtered.slice(0, productPreviewLimit);
+  more.hidden = showAllProducts || filtered.length <= productPreviewLimit;
+  grid.innerHTML = visible.map(p => `
+    <div class="product-card">
+      <div class="product-img">
+        ${p.images?.length ? `<img src="${p.images[0]}" alt="${p.name}">` : getIcon(p.cat)}
+        ${p.tag ? `<div class="product-stamp">${p.tag}</div>` : ''}
+      </div>
+      <div class="product-body">
+        <div class="product-cat">${p.cat}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-desc">${p.desc}</div>
+        <div class="product-footer">
+          <div class="product-price">${p.price}</div>
+          <a href="#order" class="btn btn-primary btn-sm" onclick="prefill('${p.name.replace(/'/g,"\\'")}')">Order</a>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function handleSearch() {
+  showAllProducts = false;
+  renderProducts();
+}
+
+function showMoreProducts() {
+  showAllProducts = true;
+  renderProducts();
+}
+
+function prefill(name) {
+  for (let o of productSelect.options) {
+    if (o.value === name) { productSelect.value = name; break; }
+  }
+}
+
+function addOrderItem() {
+  const productName = productSelect.value;
+  const qty = Number(document.getElementById('qty').value);
+  if (!productName) { alert('Please select a product first.'); return false; }
+  const product = products.find(p => p.name === productName);
+  const existing = orderItems.find(item => item.name === productName);
+  if (existing) {
+    existing.qty += qty;
+  } else {
+    orderItems.push({
+      name: productName,
+      qty,
+      price: product ? product.price : ''
+    });
+  }
+  productSelect.value = '';
+  document.getElementById('qty').value = '1';
+  renderOrderItems();
+  document.getElementById('successMsg').classList.remove('show');
+  return true;
+}
+
+function removeOrderItem(index) {
+  orderItems.splice(index, 1);
+  renderOrderItems();
+}
+
+function renderOrderItems() {
+  const box = document.getElementById('orderItemsBox');
+  if (!orderItems.length) {
+    box.innerHTML = `
+      <div class="order-items-title">Items in this order</div>
+      <div class="order-items-empty">No items added yet. Select a product and press Add Item.</div>`;
+    return;
+  }
+  box.innerHTML = `
+    <div class="order-items-title">Items in this order (${orderItems.length})</div>
+    ${orderItems.map((item, index) => `
+      <div class="order-item">
+        <div>
+          <div class="order-item-name">${item.name}</div>
+          <div class="order-item-meta">${item.price}</div>
+        </div>
+        <div>Qty: ${item.qty}</div>
+        <button class="remove-item" type="button" onclick="removeOrderItem(${index})">Remove</button>
+      </div>`).join('')}`;
+}
+
+function submitOrder() {
+  const fn = document.getElementById('fname').value.trim();
+  const ln = document.getElementById('lname').value.trim();
+  const ph = document.getElementById('phone').value.trim();
+  if (!orderItems.length && productSelect.value) addOrderItem();
+  if (!fn || !ln || !ph || !orderItems.length) { alert('Please fill in your name, phone number, and add at least one product.'); return; }
+  document.getElementById('successMsg').classList.add('show');
+  console.log('Order items:', orderItems);
+  document.getElementById('orderForm').querySelectorAll('input, select, textarea').forEach(el => { if (el.tagName !== 'SELECT' || el.id === 'qty' || el.id === 'delivery') el.value = ''; });
+  productSelect.value = '';
+  orderItems = [];
+  renderOrderItems();
+  document.getElementById('successMsg').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+// Hamburger
+document.getElementById('hamburger').addEventListener('click', () => document.getElementById('navLinks').classList.toggle('open'));
+document.querySelectorAll('#navLinks a').forEach(a => a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open')));
+
+renderProducts();
+</script>
+</body>
+</html>

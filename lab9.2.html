@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Шагай - Mongolian Knuckle Bone Game</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Darker, moodier nomadic palette */
+            --earth-dark: #2a1f16;
+            --earth-darker: #1a1410;
+            --earth-medium: #4a3930;
+            --earth-light: #8b7355;
+            --cream: #e8dcc8;
+            --linen: #f5f1eb;
+            --accent-bronze: #a67c52;
+            --accent-gold: #c9a961;
+            --accent-rust: #a05a3c;
+            --accent-sage: #6b8e5f;
+            --accent-dusk: #5a6b7d;
+            --trace-light: #d4c4b0;
+            --trace-medium: #a67c52;
+            --trace-dark: #5c4a3d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1410 0%, #2a1f16 50%, #1a1410 100%);
+            color: #e8dcc8;
+            font-family: 'Lora', serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Canvas texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(61, 50, 38, 0.08) 0px,
+                    rgba(61, 50, 38, 0.08) 1px,
+                    transparent 1px,
+                    transparent 2px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(61, 50, 38, 0.06) 0px,
+                    rgba(61, 50, 38, 0.06) 1px,
+                    transparent 1px,
+                    transparent 2px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Header with darker aesthetic */
+        .header {
+            background: linear-gradient(135deg, #1a1410 0%, #2a1f16 50%, #1a1410 100%);
+            color: #e8dcc8;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            border-bottom: 8px solid #a67c52;
+            animation: fadeInDown 0.8s ease-out;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: repeating-linear-gradient(
+                90deg,
+                #a67c52 0px,
+                #a67c52 15px,
+                #c9a961 15px,
+                #c9a961 30px
+            );
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #f5f1eb;
+            text-shadow: 4px 4px 12px rgba(0, 0, 0, 0.8);
+            margin: 0 0 0.5rem 0;
+            letter-spacing: 3px;
+        }
+
+        .header .subtitle {
+            font-family: 'Lora', serif;
+            font-size: 1.2rem;
+            color: #c9a961;
+            letter-spacing: 2px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .header .tagline {
+            font-size: 0.9rem;
+            color: rgba(232, 220, 200, 0.7);
+            margin-top: 0.75rem;
+            font-style: italic;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Main container */
+        .container-game {
+            max-width: 1100px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Card base with darker vintage aesthetic */
+        .card-vintage {
+            background: linear-gradient(135deg, #3a2f28 0%, #2a1f16 50%, #3a2f28 100%);
+            border: 3px solid #a67c52;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-vintage::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                #c9a961,
+                transparent
+            );
+        }
+
+        .card-vintage::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 2.5rem;
+            right: 2.5rem;
+            height: 1px;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 8px,
+                rgba(166, 124, 82, 0.2) 8px,
+                rgba(166, 124, 82, 0.2) 10px
+            );
+        }
+
+        /* Setup Panel */
+        .setup-panel {
+            animation: slideInUp 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .setup-panel h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #e8dcc8;
+            margin-bottom: 2rem;
+            text-align: center;
+            letter-spacing: 2px;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .setup-panel h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #a67c52, transparent);
+        }
+
+        .form-label {
+            color: #e8dcc8;
+            font-weight: 600;
+            margin-bottom: 0.7rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #a67c52;
+            color: #e8dcc8;
+            padding: 0.85rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-family: 'Lora', serif;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #c9a961;
+            box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.15);
+            color: #e8dcc8;
+        }
+
+        .form-control::placeholder {
+            color: rgba(232, 220, 200, 0.4);
+        }
+
+        #playerNamesContainer {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .player-name-field {
+            min-width: 0;
+        }
+
+        /* Rules Info */
+        .rules-info {
+            background: linear-gradient(135deg, rgba(166, 124, 82, 0.12), rgba(107, 142, 95, 0.08));
+            border-left: 6px solid #a67c52;
+            border-radius: 4px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+            color: #e8dcc8;
+            position: relative;
+        }
+
+        .rules-info h4 {
+            color: #c9a961;
+            margin-bottom: 1rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+        }
+
+        .rules-info ul {
+            margin-bottom: 0;
+            padding-left: 1.5rem;
+        }
+
+        .rules-info li {
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+        }
+
+        .rules-info strong {
+            color: #c9a961;
+        }
+
+        /* Buttons */
+        .btn-primary-game {
+            background: linear-gradient(135deg, #a67c52 0%, #7a5a3f 100%);
+            border: 2px solid #c9a961;
+            color: #1a1410;
+            padding: 1rem 2.5rem;
+            font-weight: 700;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1rem;
+            font-family: 'Playfair Display', serif;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-primary-game:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(135deg, #c9a961 0%, #a67c52 100%);
+        }
+
+        .btn-primary-game:active {
+            transform: translateY(0);
+        }
+
+        /* Game Board */
+        .game-board {
+            display: none;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .game-board.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Track Container */
+        .track-container {
+            background: linear-gradient(135deg, #3a2f28 0%, #2a1f16 50%, #3a2f28 100%);
+            border: 3px solid #a67c52;
+            border-radius: 8px;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            position: sticky;
+            top: 0.75rem;
+            z-index: 20;
+        }
+
+        .track-container::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            right: 20px;
+            height: 1px;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 8px,
+                rgba(166, 124, 82, 0.2) 8px,
+                rgba(166, 124, 82, 0.2) 10px
+            );
+        }
+
+        .track-title {
+            color: #e8dcc8;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        /* Player Track */
+        .player-track {
+            margin-bottom: 2.5rem;
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .track-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            padding: 0 0.5rem;
+        }
+
+        .player-name {
+            font-weight: 700;
+            color: #e8dcc8;
+            font-size: 1.15rem;
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 1px;
+        }
+
+        .player-position {
+            color: #c9a961;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .track {
+            background: linear-gradient(90deg, rgba(42, 31, 22, 0.8), rgba(42, 31, 22, 0.5));
+            border: 2px solid #a67c52;
+            border-radius: 4px;
+            height: 55px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        .track::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-image: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 19px,
+                    rgba(166, 124, 82, 0.15) 19px,
+                    rgba(166, 124, 82, 0.15) 20px
+                );
+            pointer-events: none;
+        }
+
+        /* Horse trace - changes color as it progresses */
+        .horse-trace {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(212, 196, 176, 0.3), rgba(212, 196, 176, 0.1));
+            border-right: 2px solid rgba(212, 196, 176, 0.4);
+            transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 2;
+        }
+
+        .horse-trace.trace-medium {
+            background: linear-gradient(90deg, rgba(166, 124, 82, 0.4), rgba(166, 124, 82, 0.15));
+            border-right-color: rgba(166, 124, 82, 0.6);
+        }
+
+        .horse-trace.trace-dark {
+            background: linear-gradient(90deg, rgba(92, 74, 61, 0.5), rgba(92, 74, 61, 0.2));
+            border-right-color: rgba(92, 74, 61, 0.8);
+        }
+
+        .finish-line {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 8px;
+            background: repeating-linear-gradient(
+                90deg,
+                #a05a3c,
+                #a05a3c 8px,
+                #c9a961 8px,
+                #c9a961 16px
+            );
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3), 0 0 12px rgba(160, 90, 60, 0.6);
+            z-index: 5;
+        }
+
+        .horse {
+            position: absolute;
+            top: 50%;
+            left: 5px;
+            transform: translateY(-50%);
+            width: 64px;
+            height: 46px;
+            transition: left 0.3s ease-out;
+            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
+            z-index: 10;
+        }
+
+        .horse.winner {
+            animation: victoryBounce 0.6s ease-out;
+            width: 74px;
+            height: 54px;
+        }
+
+        .horse img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .horse.moving img {
+            filter: brightness(0) invert(1);
+        }
+
+        @keyframes victoryBounce {
+            0%, 100% {
+                transform: translateY(-50%) scale(1);
+            }
+            50% {
+                transform: translateY(-100%) scale(1.2);
+            }
+        }
+
+        /* Bone Rolling Area */
+        .bone-area {
+            background: linear-gradient(135deg, #3a2f28 0%, #2a1f16 50%, #3a2f28 100%);
+            border: 3px solid #a05a3c;
+            border-radius: 8px;
+            padding: 1.25rem 1.5rem;
+            text-align: center;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 10px 40px rgba(160, 90, 60, 0.15);
+            position: relative;
+        }
+
+        .bone-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #a05a3c, transparent);
+        }
+
+        .bone-area h3 {
+            color: #e8dcc8;
+            margin-bottom: 0.8rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .bones-display {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 0.8rem;
+            min-height: 78px;
+            flex-wrap: wrap;
+        }
+
+        .bone {
+            width: 86px;
+            height: 68px;
+            background: #c9a961;
+            background-image: var(--bone-image);
+            background-size: var(--bone-size, 200% 200%);
+            background-position: var(--bone-position);
+            background-repeat: no-repeat;
+            border: 3px solid #5c4a3d;
+            border-radius: 6px;
+            box-shadow: 
+                0 6px 16px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            animation: roll 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bone::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border-radius: 4px;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), transparent);
+            pointer-events: none;
+        }
+
+        .bone-label {
+            position: absolute;
+            bottom: -24px;
+            font-size: 0.7rem;
+            color: #e8dcc8;
+            font-weight: 700;
+            text-transform: uppercase;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+            font-family: 'Lora', serif;
+        }
+
+        @keyframes roll {
+            0% {
+                transform: translate(var(--throw-x, 0), -42px) rotateX(180deg) rotateZ(calc(var(--land-rotate, 0deg) - 220deg)) scale(0.35);
+                opacity: 0;
+            }
+            42% {
+                transform: translate(calc(var(--throw-x, 0) * -0.35), 14px) rotateX(80deg) rotateZ(calc(var(--land-rotate, 0deg) + 96deg)) scale(1.15);
+                opacity: 1;
+            }
+            68% {
+                transform: translate(calc(var(--throw-x, 0) * 0.18), -9px) rotateX(28deg) rotateZ(calc(var(--land-rotate, 0deg) - 24deg)) scale(0.97);
+            }
+            100% {
+                transform: translate(0, 0) rotateX(0) rotateZ(var(--land-rotate, 0deg)) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .roll-info {
+            font-size: 1rem;
+            color: #e8dcc8;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            min-height: 2.4rem;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .roll-info .horses-count {
+            font-size: 1.55rem;
+            color: #c9a961;
+            display: block;
+            margin: 0.5rem 0;
+        }
+
+        .special-roll {
+            color: #c9a961;
+            font-size: 1.05rem;
+            animation: pulse 0.7s ease-out;
+            letter-spacing: 1px;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.15);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .btn-roll {
+            background: linear-gradient(135deg, #a05a3c 0%, #7a4429 100%);
+            border: 2px solid #5c4a3d;
+            color: #e8dcc8;
+            padding: 0.75rem 1.8rem;
+            font-weight: 700;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+            font-family: 'Playfair Display', serif;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-roll:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(135deg, #c9a961 0%, #a67c52 100%);
+            color: #2a1f16;
+        }
+
+        .btn-roll:disabled {
+            background: rgba(160, 90, 60, 0.3);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Status Panel */
+        .status-panel {
+            background: linear-gradient(135deg, #3a2f28 0%, #2a1f16 50%, #3a2f28 100%);
+            border: 3px solid #6b8e5f;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(107, 142, 95, 0.15);
+            position: relative;
+        }
+
+        .status-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #6b8e5f, transparent);
+        }
+
+        .status-panel h3 {
+            color: #e8dcc8;
+            margin-bottom: 1rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+        }
+
+        .current-player {
+            font-size: 1.4rem;
+            color: #e8dcc8;
+            font-weight: 700;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, rgba(166, 124, 82, 0.15), rgba(107, 142, 95, 0.08));
+            border-left: 6px solid #a67c52;
+            border-radius: 4px;
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 1px;
+        }
+
+        /* Win Screen */
+        .win-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(26, 20, 16, 0.98), rgba(42, 31, 22, 0.98));
+            z-index: 1000;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .win-screen.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .win-content {
+            background: linear-gradient(135deg, #3a2f28 0%, #2a1f16 50%, #3a2f28 100%);
+            border: 4px solid #a67c52;
+            border-radius: 8px;
+            padding: 3.5rem;
+            text-align: center;
+            max-width: 500px;
+            animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+            position: relative;
+        }
+
+        .win-content::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 30px;
+            right: 30px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #a67c52, transparent);
+        }
+
+        .win-content::after {
+            content: '';
+            position: absolute;
+            bottom: 15px;
+            left: 30px;
+            right: 30px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #a67c52, transparent);
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .win-content h2 {
+            color: #e8dcc8;
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+            letter-spacing: 2px;
+        }
+
+        .winner-name {
+            color: #c9a961;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .celebration {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            animation: bounce 1.2s ease-in-out infinite;
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, #a67c52 0%, #7a5a3f 100%);
+            border: 2px solid #c9a961;
+            color: #1a1410;
+            padding: 1rem 2.5rem;
+            font-weight: 700;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1rem;
+            font-family: 'Playfair Display', serif;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-restart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(135deg, #c9a961 0%, #a67c52 100%);
+            color: #1a1410;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary-game {
+            background: linear-gradient(135deg, rgba(107, 142, 95, 0.2), rgba(107, 142, 95, 0.1));
+            border: 2px solid #6b8e5f;
+            color: #e8dcc8;
+            padding: 0.8rem 1.8rem;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-family: 'Playfair Display', serif;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+        }
+
+        .btn-secondary-game:hover {
+            background: linear-gradient(135deg, rgba(107, 142, 95, 0.35), rgba(107, 142, 95, 0.25));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 142, 95, 0.3);
+        }
+
+        /* Ornamental divider */
+        .ornament-divider {
+            text-align: center;
+            color: #a67c52;
+            font-size: 1.5rem;
+            margin: 2rem 0;
+            letter-spacing: 4px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .header .subtitle {
+                font-size: 1rem;
+            }
+
+            .setup-panel h2 {
+                font-size: 1.5rem;
+            }
+
+            .form-label {
+                font-size: 1rem;
+            }
+
+            .horse {
+                width: 50px;
+                height: 36px;
+            }
+
+            .horse.winner {
+                width: 60px;
+                height: 44px;
+            }
+
+            .bone {
+                width: 78px;
+                height: 62px;
+            }
+
+            .bone-label {
+                font-size: 0.66rem;
+                bottom: -22px;
+            }
+
+            .track {
+                height: 45px;
+            }
+
+            .track-container {
+                position: static;
+                padding: 1.5rem;
+            }
+
+            #playerNamesContainer {
+                grid-template-columns: 1fr;
+            }
+
+            .bone-area.card-vintage {
+                padding: 1rem;
+            }
+
+            .win-content {
+                padding: 2rem;
+                max-width: 90%;
+            }
+
+            .win-content h2 {
+                font-size: 2rem;
+            }
+
+            .winner-name {
+                font-size: 1.5rem;
+            }
+
+            .bones-display {
+                min-height: 72px;
+            }
+
+            .card-vintage {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Utility Classes */
+        .text-center-game {
+            text-align: center;
+        }
+
+        .mt-4 {
+            margin-top: 2rem !important;
+        }
+
+        .mb-3 {
+            margin-bottom: 1rem !important;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.15);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>⟡ ШАГАЙ ⟡</h1>
+        <div class="subtitle">Mongolian Knuckle Bone Game</div>
+        <div class="tagline">Journey Through the Steppe</div>
+    </div>
+
+    <div class="container-game">
+        <!-- Setup Panel -->
+        <div class="setup-panel card-vintage" id="setupPanel">
+            <h2>Begin Your Journey</h2>
+            
+            <div class="rules-info">
+                <h4>Rules of the game</h4>
+                <ul>
+                    <li><strong>4 Knuckle Bones:</strong> Each has 4 faces - Horse (морь), Camel (төмөр), Sheep (хонь), Goat (ямаа)</li>
+                    <li><strong>Count Horses:</strong> Count how many bones land as Horse (морь)</li>
+                    <li><strong>Movement:</strong> Move your horse forward by the number of horses rolled (1-4)</li>
+                    <li><strong>Special Roll:</strong> All 4 types (дөрвөн бэрх) = move 4 spaces!</li>
+                    <li><strong>No Horses:</strong> If no bones land as Horse, skip your turn</li>
+                    <li><strong>Victory:</strong> First horse to reach the finish line wins!</li>
+                </ul>
+            </div>
+
+            <div class="ornament-divider">✦ ✦ ✦</div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Number of Players</label>
+                    <select id="playerCount" class="form-control">
+                        <option value="2">2 Players</option>
+                        <option value="3">3 Players</option>
+                        <option value="4">4 Players</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Track Length</label>
+                    <select id="difficulty" class="form-control">
+                        <option value="20">Short (20 units)</option>
+                        <option value="50" selected>Medium (50 units)</option>
+                        <option value="100">Long (100 units)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="playerNamesContainer"></div>
+
+            <div class="text-center-game mt-4">
+                <button class="btn-primary-game" onclick="startGame()">Start Game</button>
+            </div>
+        </div>
+
+        <!-- Game Board -->
+        <div class="game-board" id="gameBoard">
+
+            <!-- Track Container -->
+            <div class="track-container card-vintage">
+                <div class="track-title">⟡ THE GREAT RACE ⟡</div>
+                <div id="tracksContainer"></div>
+            </div>
+
+            <!-- Bone Rolling Area -->
+            <div class="bone-area card-vintage">
+                <h3>⟡ CAST YOUR BONES ⟡</h3>
+                <div class="bones-display" id="bonesDisplay"></div>
+                <div class="roll-info" id="rollInfo"></div>
+                <button class="btn-roll" id="rollButton" onclick="rollBones()">Шагай хаях (throw knucklebones)</button>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn-secondary-game" onclick="resetGame()">New Game</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Win Screen -->
+    <div class="win-screen" id="winScreen">
+        <div class="win-content">
+            <div class="celebration">⟡</div>
+            <h2>Victory!</h2>
+            <div class="winner-name" id="winnerName"></div>
+            <p style="color: #e8dcc8; font-size: 1.05rem; margin-bottom: 2rem; font-family: 'Lora', serif; font-weight: 600;">
+                has claimed glory!<br><span style="font-size: 0.9rem; letter-spacing: 2px;">May the winds favor them always.</span>
+            </p>
+            <button class="btn-restart" onclick="resetGame()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Animal types for Shagai bones
+        const BONE_TYPES = {
+            HORSE: 'Horse',
+            CAMEL: 'Camel',
+            SHEEP: 'Sheep',
+            GOAT: 'Goat'
+        };
+
+        const BONE_IMAGES = {
+            Horse: { image: 'horse.png', position: 'center', size: 'contain' },
+            Camel: { image: 'camel.png', position: 'center', size: 'contain' },
+            Sheep: { image: 'sheep.png', position: 'center', size: 'contain' },
+            Goat: { image: 'goat.png', position: 'center', size: 'contain' }
+        };
+
+        const HORSE_IDLE_SRC = 'horse-road-white.png';
+        const HORSE_RUN_SRC = 'horse-road-run-white.gif';
+        new Image().src = HORSE_RUN_SRC;
+
+        // Horse icons facing right (toward finish line)
+        const HORSE_ICONS = {
+            '🐴': '➜ 🐴',
+            '🐎': '➜ 🐎',
+            '🦄': '➜ 🦄',
+            '🐭': '➜ 🐭'
+        };
+
+        // Game State
+        let gameState = {
+            players: [],
+            currentPlayerIndex: 0,
+            trackLength: 50,
+            gameActive: false,
+            bonesRolled: false
+        };
+
+        // Initialize player names input
+        function updatePlayerNamesContainer() {
+            const count = parseInt(document.getElementById('playerCount').value);
+            const container = document.getElementById('playerNamesContainer');
+            container.innerHTML = '';
+
+            for (let i = 0; i < count; i++) {
+                container.innerHTML += `
+                    <div class="player-name-field">
+                        <label class="form-label">Player ${i + 1}</label>
+                        <input type="text" class="form-control player-name-input" 
+                               placeholder="Enter name or use default" 
+                               id="playerName${i}">
+                    </div>
+                `;
+            }
+        }
+
+        // Event listener for player count change
+        document.getElementById('playerCount').addEventListener('change', updatePlayerNamesContainer);
+
+        // Initialize on load
+        updatePlayerNamesContainer();
+
+        // Start Game
+        function startGame() {
+            const count = parseInt(document.getElementById('playerCount').value);
+            const trackLength = parseInt(document.getElementById('difficulty').value);
+
+            gameState.players = [];
+            gameState.trackLength = trackLength;
+            gameState.currentPlayerIndex = 0;
+            gameState.gameActive = true;
+            gameState.bonesRolled = false;
+
+            const horseEmojis = ['🐴', '🐎', '🦄'];
+
+            for (let i = 0; i < count; i++) {
+                const nameInput = document.getElementById(`playerName${i}`);
+                const name = nameInput.value.trim() || `Player ${i + 1}`;
+                gameState.players.push({
+                    name: name,
+                    position: 0,
+                    horseEmoji: horseEmojis[i]
+                });
+            }
+
+            // Hide setup, show game board
+            document.getElementById('setupPanel').style.display = 'none';
+            document.getElementById('gameBoard').classList.add('active');
+
+            // Render tracks
+            renderTracks();
+            updateStatus();
+            clearBonesDisplay();
+        }
+
+        // Render tracks
+        function renderTracks() {
+            const container = document.getElementById('tracksContainer');
+            container.innerHTML = '';
+
+            gameState.players.forEach((player, index) => {
+                const trackHtml = `
+                    <div class="player-track">
+                        <div class="track-label">
+                            <span class="player-name">${HORSE_ICONS[player.horseEmoji]} ${player.name}</span>
+                            <span class="player-position" id="position${index}">${player.position} / ${gameState.trackLength}</span>
+                        </div>
+                        <div class="track" id="track${index}">
+                            <div class="horse-trace" id="trace${index}"></div>
+                            <div class="finish-line"></div>
+                            <div class="horse" id="horse${index}">
+                                <img src="horse-road-white.png" alt="${player.name}'s horse">
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += trackHtml;
+            });
+
+            updateHorsePositions();
+        }
+
+        // Update horse positions visually with trace color change
+        function updateHorsePositions() {
+            gameState.players.forEach((player, index) => {
+                const horse = document.getElementById(`horse${index}`);
+                const trace = document.getElementById(`trace${index}`);
+                const track = document.getElementById(`track${index}`);
+                const trackWidth = track.offsetWidth;
+                const finishLineWidth = 8;
+                const maxPosition = trackWidth - finishLineWidth - horse.offsetWidth;
+                const percentage = Math.min((player.position / gameState.trackLength) * 100, 95);
+                const position = (percentage / 100) * maxPosition;
+                
+                // Update horse position
+                horse.style.left = position + 'px';
+                
+                // Update trace width and color based on progress
+                trace.style.width = percentage + '%';
+                
+                // Update position display indicator
+                const positionDisplay = document.getElementById(`position${index}`);
+                if (positionDisplay) {
+                    positionDisplay.textContent = `${player.position} / ${gameState.trackLength}`;
+                }
+                
+                // Change trace color based on progress
+                if (percentage > 66) {
+                    trace.classList.remove('trace-medium');
+                    trace.classList.add('trace-dark');
+                } else if (percentage > 33) {
+                    trace.classList.remove('trace-dark');
+                    trace.classList.add('trace-medium');
+                } else {
+                    trace.classList.remove('trace-medium', 'trace-dark');
+                }
+            });
+        }
+
+        // Update status display
+        function updateStatus() {
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            document.getElementById('currentPlayerDisplay').textContent = 
+                `${HORSE_ICONS[currentPlayer.horseEmoji]} ${currentPlayer.name}'s Turn`;
+            document.getElementById('rollButton').disabled = gameState.bonesRolled;
+        }
+
+        function setHorseMoving(index, isMoving) {
+            const horseImage = document.querySelector(`#horse${index} img`);
+            if (!horseImage) return;
+            horseImage.closest('.horse')?.classList.toggle('moving', isMoving);
+            horseImage.src = isMoving ? HORSE_RUN_SRC : HORSE_IDLE_SRC;
+        }
+
+        function focusTrackArea() {
+            document.querySelector('.track-container')?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+
+        // Roll bones
+        function rollBones() {
+            if (gameState.bonesRolled || !gameState.gameActive) return;
+
+            gameState.bonesRolled = true;
+
+            // Roll 4 bones - each can be Horse, Camel, Sheep, or Goat
+            const boneTypes = [];
+            const boneValues = [];
+
+            for (let i = 0; i < 4; i++) {
+                const typeIndex = Math.floor(Math.random() * 4);
+                const types = [BONE_TYPES.HORSE, BONE_TYPES.CAMEL, BONE_TYPES.SHEEP, BONE_TYPES.GOAT];
+                const type = types[typeIndex];
+                boneTypes.push(type);
+                boneValues.push(type === BONE_TYPES.HORSE ? 1 : 0);
+            }
+
+            // Count horses
+            const horseCount = boneValues.reduce((a, b) => a + b, 0);
+
+            // Check for special roll: дөрвөн бэрх (all 4 types)
+            const uniqueTypes = new Set(boneTypes).size;
+            const isSpecialRoll = uniqueTypes === 4;
+
+            // Display bones with animation
+            displayBones(boneTypes);
+            focusTrackArea();
+
+            // Move horse
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            let movement = 0;
+
+            if (isSpecialRoll) {
+                movement = 4; // дөрвөн бэрх = 4 spaces
+            } else if (horseCount > 0) {
+                movement = horseCount;
+            }
+
+            currentPlayer.position += movement;
+
+            // Update display
+            setTimeout(() => {
+                if (movement > 0) {
+                    setHorseMoving(gameState.currentPlayerIndex, true);
+                }
+                requestAnimationFrame(updateHorsePositions);
+                setTimeout(() => {
+                    setHorseMoving(gameState.currentPlayerIndex, false);
+                }, 700);
+                
+                if (isSpecialRoll) {
+                    document.getElementById('rollInfo').innerHTML = 
+                        `<div class="special-roll">✦ Дөрвөн бэрх! ✦<br><span class="horses-count">4</span><br>All Four Types!</div>`;
+                } else if (horseCount > 0) {
+                    document.getElementById('rollInfo').innerHTML = 
+                        `<div><span class="horses-count">${horseCount}</span><span style="font-size: 1rem; display: block; margin-top: 0.5rem;">Horse${horseCount > 1 ? 's' : ''} - Advance ${movement}</span></div>`;
+                } else {
+                    document.getElementById('rollInfo').innerHTML = 
+                        `<div style="color: #c9a961; font-size: 1.1rem;">✦ No Horses ✦<br><span style="font-size: 0.95rem; display: block; margin-top: 0.5rem;">Your turn passes</span></div>`;
+                }
+
+                // Check for winner
+                setTimeout(() => {
+                    if (currentPlayer.position >= gameState.trackLength) {
+                        winGame(currentPlayer);
+                    } else if (movement === 0) {
+                        // Skip turn if no horses
+                        setTimeout(() => {
+                            nextPlayer();
+                        }, 700);
+                    } else {
+                        // Next player
+                        setTimeout(() => {
+                            nextPlayer();
+                        }, 850);
+                    }
+                }, 220);
+            }, 350);
+        }
+
+        // Display bones
+        function displayBones(boneTypes) {
+            const display = document.getElementById('bonesDisplay');
+            display.innerHTML = '';
+            
+            boneTypes.forEach((type, index) => {
+                setTimeout(() => {
+                    const boneContainer = document.createElement('div');
+                    boneContainer.style.position = 'relative';
+                    
+                    const bone = document.createElement('div');
+                    const boneImage = BONE_IMAGES[type];
+                    bone.className = 'bone';
+                    bone.setAttribute('role', 'img');
+                    bone.setAttribute('aria-label', `${type} shagai`);
+                    bone.style.setProperty('--bone-image', `url("${boneImage.image}")`);
+                    bone.style.setProperty('--bone-position', boneImage.position);
+                    bone.style.setProperty('--bone-size', boneImage.size);
+                    bone.style.setProperty('--throw-x', `${Math.floor(Math.random() * 60) - 30}px`);
+                    bone.style.setProperty('--land-rotate', `${Math.floor(Math.random() * 32) - 16}deg`);
+                    
+                    const label = document.createElement('div');
+                    label.className = 'bone-label';
+                    label.textContent = type;
+                    
+                    boneContainer.appendChild(bone);
+                    boneContainer.appendChild(label);
+                    display.appendChild(boneContainer);
+                }, index * 150);
+            });
+        }
+
+        // Clear bones display
+        function clearBonesDisplay() {
+            document.getElementById('bonesDisplay').innerHTML = '';
+            document.getElementById('rollInfo').innerHTML = '';
+        }
+
+        // Next player
+        function nextPlayer() {
+            gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+            gameState.bonesRolled = false;
+            clearBonesDisplay();
+            updateStatus();
+        }
+
+        // Win game
+        function winGame(winner) {
+            gameState.gameActive = false;
+            document.getElementById('winnerName').textContent = `${HORSE_ICONS[winner.horseEmoji]} ${winner.name}`;
+            document.getElementById('winScreen').classList.add('active');
+
+            // Celebrate winner horse
+            const winnerIndex = gameState.players.indexOf(winner);
+            const winnerHorse = document.getElementById(`horse${winnerIndex}`);
+            setHorseMoving(winnerIndex, false);
+            winnerHorse.classList.add('winner');
+        }
+
+        // Reset game
+        function resetGame() {
+            document.getElementById('gameBoard').classList.remove('active');
+            document.getElementById('setupPanel').style.display = 'block';
+            document.getElementById('winScreen').classList.remove('active');
+            gameState.gameActive = false;
+            gameState.bonesRolled = false;
+            clearBonesDisplay();
+        }
+
+        // Handle window resize for responsive horse positioning
+        window.addEventListener('resize', () => {
+            if (gameState.gameActive) {
+                updateHorsePositions();
+            }
+        });
+    </script>
+</body>
+</html>

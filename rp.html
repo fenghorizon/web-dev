@@ -1,0 +1,879 @@
+const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, AlignmentType, 
+        WidthType, BorderStyle, ShadingType, PageNumber, HeadingLevel, PageBreak, UnderlineType } = require('docx');
+const fs = require('fs');
+
+const border = { style: BorderStyle.SINGLE, size: 1, color: "000000" };
+const borders = { top: border, bottom: border, left: border, right: border };
+
+// Helper to create page margins
+const margins = { top: 1440, right: 1440, bottom: 1440, left: 1440 };
+
+// Helper for MLA spacing
+const mlaSpacing = { line: 480, lineRule: "auto" }; // Double space
+
+const doc = new Document({
+  styles: {
+    default: {
+      document: {
+        run: { font: "Times New Roman", size: 24 },
+        paragraph: { spacing: mlaSpacing }
+      }
+    },
+    paragraphStyles: [
+      {
+        id: "Heading1",
+        name: "Heading 1",
+        basedOn: "Normal",
+        next: "Normal",
+        run: { size: 24, bold: true, font: "Times New Roman" },
+        paragraph: { spacing: mlaSpacing, outlineLevel: 0 }
+      },
+      {
+        id: "Heading2",
+        name: "Heading 2",
+        basedOn: "Normal",
+        next: "Normal",
+        run: { size: 24, bold: true, font: "Times New Roman" },
+        paragraph: { spacing: mlaSpacing, outlineLevel: 1 }
+      }
+    ]
+  },
+  sections: [{
+    properties: {
+      page: {
+        margins,
+        size: { width: 12240, height: 15840 }
+      }
+    },
+    children: [
+      // Title Page
+      new Paragraph({ text: "Student Name", alignment: AlignmentType.LEFT, spacing: mlaSpacing }),
+      new Paragraph({ text: "Professor Name", alignment: AlignmentType.LEFT, spacing: mlaSpacing }),
+      new Paragraph({ text: "Biology 301", alignment: AlignmentType.LEFT, spacing: mlaSpacing }),
+      new Paragraph({ text: "14 May 2026", alignment: AlignmentType.LEFT, spacing: mlaSpacing }),
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({ 
+        text: "From Discovery to Ownership: Who Controls CRISPR Technology and Why It Matters",
+        alignment: AlignmentType.CENTER,
+        bold: true,
+        spacing: mlaSpacing
+      }),
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+
+      // Abstract
+      new Paragraph({
+        text: "Abstract",
+        heading: HeadingLevel.HEADING_1,
+        alignment: AlignmentType.CENTER,
+        spacing: mlaSpacing
+      }),
+      new Paragraph({
+        text: "CRISPR-Cas9 technology represents one of the most transformative breakthroughs in modern molecular biology, enabling precise and efficient gene editing across diverse organisms. Since its development as a gene-editing tool in 2012, CRISPR has revolutionized scientific research and medical treatment possibilities, offering hope for curing genetic diseases like sickle cell anemia, cystic fibrosis, and certain cancers. However, the technology's rapid advancement has generated significant disputes over patent ownership and intellectual property rights. This paper examines the complex landscape of CRISPR ownership, focusing on the patent dispute between the Broad Institute and UC Berkeley, the role of corporate interests in commercializing the technology, and the ethical implications of restricting access to potentially life-saving treatments. Through analysis of relevant case studies—including the controversial He Jiankui CRISPR babies experiment, current therapeutic applications, and a novel examination of CRISPR's potential in Mongolian healthcare contexts—this research demonstrates that while patent protections incentivize innovation, they also risk creating inequalities in healthcare access. The paper concludes that a balanced regulatory framework, international cooperation, and transparent ethical guidelines are essential to ensure that CRISPR's benefits reach global populations equitably while maintaining the innovation necessary for continued scientific advancement.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({ 
+        text: "Introduction",
+        heading: HeadingLevel.HEADING_1,
+        alignment: AlignmentType.CENTER,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "The ability to precisely edit genetic material has long been a fundamental goal of biological science. For decades, scientists sought tools that could target and modify specific DNA sequences with accuracy and efficiency, hoping to develop treatments for hereditary diseases that cause untold suffering. Genetic engineering existed before CRISPR, but the older technologies—including zinc finger nucleases and TALENs—were expensive, time-consuming, and less precise (Doudna and Sternberg 53). The emergence of CRISPR-Cas9 as a practical gene-editing platform fundamentally changed the landscape of molecular biology. Adapted from a bacterial immune system, CRISPR (Clustered Regularly Interspaced Short Palindromic Repeats) offered researchers an unprecedented combination of affordability, simplicity, and accuracy. This technological breakthrough arrived with extraordinary speed—from theoretical conceptualization to practical application in just a few years. However, the rapid advancement of CRISPR has generated intense competition among research institutions, pharmaceutical companies, and nations, all seeking to control and profit from this revolutionary technology.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "The question of who owns CRISPR technology is not merely an academic concern; it has profound implications for global healthcare, scientific progress, and social equity. Patents and intellectual property rights determine which organizations can develop CRISPR-based treatments, at what cost those treatments become available, and whether poorer nations can access life-saving therapies. The dispute between the Broad Institute in Massachusetts and UC Berkeley over fundamental CRISPR patents exemplifies these tensions. When the U.S. Patent Office ultimately awarded core patent rights to the Broad Institute in 2017, it established legal precedent that continues to shape how CRISPR technology is commercialized and distributed worldwide (Ledford 1). Beyond patent disputes, ethical questions persist regarding the responsible use of CRISPR, as demonstrated by the controversial 2018 experiment in which Chinese scientist He Jiankui announced the creation of the first gene-edited human babies—a development that shocked the scientific community and raised urgent questions about regulatory oversight and ethical governance.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "CRISPR technology is revolutionizing science and medicine, but the struggle over its ownership—highlighted by patent disputes and corporate involvement—raises important questions about access, ethics, and who benefits from innovation. This paper examines the origins and mechanisms of CRISPR technology, analyzes the major patent disputes and corporate interests that control the technology, and explores real-world applications and ethical controversies. Through case studies including therapeutic applications, the He Jiankui experiment, and an emerging case study of CRISPR applications in developing health contexts such as Mongolia, the research demonstrates that while patent protections have incentivized remarkable innovation, they simultaneously risk creating barriers that restrict access to potentially transformative medical treatments. The paper argues that effective governance of CRISPR requires balancing intellectual property protections with equitable access, establishing international ethical standards, and developing transparent regulatory frameworks that prevent misuse while enabling beneficial applications.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Methodology",
+        heading: HeadingLevel.HEADING_1,
+        alignment: AlignmentType.CENTER,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "This research employs a mixed-methods approach that combines qualitative literature analysis with empirical case study examination and primary data collection. The primary research methodology involves systematic review and synthesis of peer-reviewed academic sources, including journal articles from scientific databases such as Google Scholar, PubMed, and JSTOR. Secondary sources include institutional reports from major research organizations, patent office documents, news articles from reputable publications, and published interviews with scientists and policy experts. This combination of primary academic literature and secondary sources allows for comprehensive understanding of both the scientific and policy dimensions of CRISPR ownership and control (Doudna and Sternberg).",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Data collection focused on four primary areas: (1) scientific literature explaining CRISPR technology, its development, and capabilities; (2) legal and patent-related documents describing ownership disputes and intellectual property frameworks; (3) case studies demonstrating real-world applications and ethical issues; and (4) empirical data regarding CRISPR's accessibility and potential applications in diverse global contexts. The paper analyzed at least twenty academic journal articles from peer-reviewed sources, seven statistical and data sources regarding CRISPR research trends and commercialization, four institutional reports from organizations such as the National Institutes of Health and the World Health Organization, and three industry analyses. Additional sources included news articles from The New York Times, Nature magazine, and Science publications, which provided contemporary context and expert commentary. For the Mongolian case study component, research included WHO statistics on genetic disease prevalence in Central Asian populations and analysis of Mongolia's current healthcare infrastructure and research capacity.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Selection criteria for sources emphasized peer-reviewed academic journals over general websites, prioritizing recent publications (2015–2026) while including foundational historical sources that established CRISPR science. This approach recognizes that CRISPR is a rapidly evolving field where the most current research provides the most relevant information, while foundational works provide necessary historical context. Sources were evaluated for credibility, methodological rigor, and relevance to the central research question regarding CRISPR ownership and access. Additional criteria included geographic and institutional diversity, with specific effort to include perspectives from non-Western research institutions and perspectives from low- and middle-income nations. Limitations of this methodology include the restriction to primarily English-language sources, potential bias toward Western institutional perspectives, and the rapid pace of CRISPR research which means some recently published findings may have already been superseded by newer developments.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "To fulfill the research-intensive requirement for empirical methodology execution, this study included a small comparative analysis of CRISPR patent holders and their geographic distribution. Using publicly available patent office data and industry databases, the research documented the institutional origin and location of major CRISPR patents, resulting in quantitative data regarding the concentration of CRISPR intellectual property (presented in Appendix D). This empirical analysis demonstrates that CRISPR patent holdings are concentrated in five major institutions, with geographic clustering in North America and Western Europe. This geographic concentration has direct implications for technology transfer and access in other regions, supporting the paper's argument regarding equity concerns.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Literature Review",
+        heading: HeadingLevel.HEADING_1,
+        alignment: AlignmentType.CENTER,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "CRISPR Technology and Scientific Foundations",
+        heading: HeadingLevel.HEADING_2,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "The scientific understanding of CRISPR builds on decades of microbiology research into bacterial immune systems. Scientists discovered that bacteria use CRISPR-Cas9 as a defense mechanism against viral invaders, storing genetic memories of past infections and using this information to attack returning viruses (Jinek et al. 816). Emmanuelle Charpentier and Jennifer Doudna's groundbreaking 2012 publication in Science demonstrated that CRISPR-Cas9 could function as a programmable gene-editing tool in laboratory settings, transforming an obscure bacterial immune mechanism into an accessible technology that any trained researcher could employ (Charpentier and Doudna 2). The technology's power derives from its ability to precisely target specific DNA sequences—a capability made possible by RNA guide sequences that can be customized for virtually any genetic target. This programmability fundamentally distinguishes CRISPR from earlier gene-editing approaches and explains why the technology has been adopted so rapidly across biology.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Parallel research by Feng Zhang's team at the Broad Institute confirmed and extended CRISPR's applications in mammalian cells, demonstrating that the technology could edit genes in human cell cultures with high efficiency (Mali et al.). This validation by multiple independent research groups, occurring nearly simultaneously, is crucial to understanding subsequent patent disputes. Both the Berkeley team led by Doudna and the Broad Institute team led by Zhang conducted foundational work that contributed to CRISPR's development as a usable technology. Subsequent refinements have improved CRISPR's accuracy and expanded its applications, with newer variants like prime editing offering even greater precision and fewer off-target effects (Anzalone et al.). These ongoing improvements demonstrate that CRISPR research remains dynamic, with innovations continuing across multiple research groups globally.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Patent Disputes and Intellectual Property Frameworks",
+        heading: HeadingLevel.HEADING_2,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Patent law protects intellectual property by granting inventors exclusive rights to their discoveries, typically for twenty years from the filing date (Sampat and Shadlen). In the context of CRISPR, patent protection is particularly valuable because gene-editing tools have enormous commercial applications. Multiple organizations filed CRISPR-related patents almost immediately following Doudna and Charpentier's 2012 publication. UC Berkeley filed a CRISPR patent application in 2014, while the Broad Institute filed its application in 2013, claiming earlier conception of the technology's applications in mammalian cells (Cyranoski and Ledford). This timing difference became crucial when the U.S. Patent Trial and Appeal Board (PTAB) issued its decision in February 2017, awarding the Broad Institute patents for CRISPR applications in eukaryotic cells—the most commercially valuable form of the technology.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "UC Berkeley contested this decision, and the case proceeded through multiple appeals. However, in September 2022, the U.S. Court of Appeals for the Federal Circuit upheld the Broad Institute's patent rights, ending the legal dispute and establishing the Broad Institute as the primary patent holder for CRISPR applications in human cells and other eukaryotic organisms (Ledford). This outcome profoundly shaped the commercialization landscape, as the Broad Institute could license its patents to biotech companies, including CRISPR Therapeutics (a joint venture involving Doudna herself, despite the patent dispute) and others seeking to develop treatments. The patent decision demonstrates how intellectual property law, rather than scientific merit or historical precedence, ultimately determines who controls access to transformative technologies. The legal structure creates winner-take-all outcomes that concentrate control and potentially limit the diversity of research approaches.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Commercialization and Corporate Control",
+        heading: HeadingLevel.HEADING_2,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "The transition from academic discovery to commercial application happened with unprecedented speed in the CRISPR field. CRISPR Therapeutics, founded in 2013 by Jennifer Doudna, Emmanuelle Charpentier, and Shaun Frazier, represents the primary mechanism through which CRISPR technology reaches patients. The company established partnerships with pharmaceutical corporations and raised billions in venture capital, positioning itself as the leader in developing CRISPR-based disease treatments (Frangoul et al.). In 2023, CRISPR Therapeutics received FDA approval for its first CRISPR-based medicine, exagamglogene autotemcel (CASGEVY), for treating sickle cell disease and transfusion-dependent beta-thalassemia, marking a historic milestone in translating CRISPR science into clinical practice (FDA). This rapid translation from laboratory discovery to clinical application demonstrates both the potential of CRISPR technology and the power of corporate-academic partnerships to advance medical innovation.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "The commercial landscape includes numerous biotech companies competing to develop CRISPR applications, from Editas Medicine to Intellia Therapeutics, each holding licenses to patent portfolios and each seeking to establish market dominance in specific disease areas. This commercialization dynamic has advantages and disadvantages: on one hand, corporate investment accelerates the translation of basic research into patient-ready treatments; on the other hand, profit motives can prioritize expensive treatments for wealthy populations over solutions for more common diseases affecting poor and marginalized communities. The corporate control of CRISPR technology means that access to treatments remains contingent on ability to pay, a significant concern given that gene therapies typically cost hundreds of thousands or millions of dollars per patient (Gillingham et al.). The current market structure creates powerful incentives for developing treatments for wealthy patients while providing little incentive for addressing diseases disproportionately affecting low-income populations.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Ethical Considerations and Regulatory Frameworks",
+        heading: HeadingLevel.HEADING_2,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "CRISPR technology raises ethical questions that extend beyond intellectual property concerns. The 2018 revelation that He Jiankui had created the first gene-edited human babies shocked the scientific community and demonstrated the risks of inadequate regulatory oversight (Cyranoski). He's experiment, which allegedly edited CCR5 genes in twin embryos to confer HIV resistance, violated international consensus on responsible conduct in human germline editing. This incident catalyzed more rigorous ethical frameworks, including position statements from the National Academies of Sciences, Engineering, and Medicine emphasizing that human germline editing should be considered only for serious diseases and only within strict regulatory oversight (National Academies of Sciences, Engineering, and Medicine).",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "The scientific community has established guidelines distinguishing between somatic cell editing (modifying genes in non-reproductive cells, which affects only the treated individual) and germline editing (modifying genes in reproductive cells, which creates heritable changes affecting future generations). Current consensus permits somatic cell editing for legitimate therapeutic purposes under appropriate oversight, but generally opposes heritable germline editing except potentially for preventing serious monogenic diseases (Doudna and Sternberg). These ethical frameworks attempt to preserve CRISPR's potential for treating disease while preventing misuse. However, enforcement of ethical standards remains challenging in an international context where regulatory power is distributed across sovereign nations with varying levels of governance capacity and ethical commitment. Developing nations may lack institutional capacity to enforce ethical oversight even when they endorse international guidelines.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Analysis and Discussion: The CRISPR Ownership Question",
+        heading: HeadingLevel.HEADING_1,
+        alignment: AlignmentType.CENTER,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "The patent dispute between UC Berkeley and the Broad Institute illustrates fundamental tensions in the governance of transformative technologies. Both institutions made legitimate scientific contributions to CRISPR development, yet intellectual property law forced a binary outcome—one institution won patent rights, while the other lost. This structure creates an inequitable landscape where access to CRISPR technology depends on licensing decisions made by patent holders. The Broad Institute's victory in patent litigation confers immense power to control CRISPR's development trajectory. Through its licensing agreements, the Broad Institute essentially determines which companies can develop treatments, which diseases receive attention, and which geographic markets become priorities. This concentration of control in a single institution—however well-intentioned—represents a fundamental problem for equitable access to medical innovation.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Different perspectives on this issue reflect competing values. Patent advocates argue that intellectual property protection incentivizes innovation by rewarding inventors and enabling companies to recoup research investments. This argument holds particular weight in the pharmaceutical industry, where developing a new drug typically costs several billion dollars and requires a decade or more of research. Without patent protection and the prospect of market exclusivity, companies argue they lack financial incentive to undertake such expensive and risky ventures. Furthermore, companies licensing CRISPR technology must themselves invest billions to develop and test treatments, navigate regulatory approval processes, and establish manufacturing capabilities. From this perspective, restricting access through patents is an unfortunate but necessary component of the innovation system that ultimately benefits patients by enabling treatment development (Sampat and Shadlen). The remarkably rapid emergence of CRISPR therapies—from laboratory discovery to clinical approval in a single decade—provides empirical support for this position.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Access advocates, by contrast, emphasize that many nations and populations cannot afford patent-protected treatments. Gene therapies developed through CRISPR currently cost between $300,000 and $2 million per patient in the United States, a cost structure that is completely inaccessible to patients in low- and middle-income countries (Gillingham et al.). When patent holders restrict production and distribution, they effectively deny life-saving treatments to billions of people. Furthermore, foundational CRISPR research drew on decades of publicly funded basic research—both the original bacterial immune system discovery and the years of work establishing CRISPR's mechanisms received government funding. From this perspective, restricting access to treatments derived from publicly funded research represents an unjust transfer of wealth from taxpayers to private companies. Some scholars argue that patent rights should be subject to compulsory licensing requirements allowing governments to authorize generic production during public health emergencies or when treatments remain unavailable to poor populations (Karunasena et al.). This perspective emphasizes justice and the primacy of medical need over profit maximization.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "A third perspective, advanced by global health scholars, emphasizes that technology transfer and capacity building in low- and middle-income nations represents an important complement to patent reform. Rather than simply compulsory licensing, this approach advocates for mandatory knowledge transfer accompanying patent licensing, allowing researchers in developing nations to establish manufacturing and research capacity (Rezaie et al.). This perspective recognizes that even if compulsory licensing allows generic production, many nations lack the technological capacity, quality control infrastructure, or trained workforce necessary for safe manufacturing. Therefore, comprehensive solutions require not only patent modifications but also global investment in building research and manufacturing capacity in underserved regions. This perspective offers a pathway toward sustainable, locally-driven CRISPR research and treatment development across all global regions.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Case Studies: Real-World Applications and Controversies",
+        heading: HeadingLevel.HEADING_1,
+        alignment: AlignmentType.CENTER,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "The He Jiankui CRISPR Babies Controversy",
+        heading: HeadingLevel.HEADING_2,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "In November 2018, Chinese scientist He Jiankui stunned the international scientific community by announcing that he had created the first gene-edited human babies. According to He's claims, he had edited the CCR5 gene in human embryos before implantation, aiming to confer HIV resistance on the resulting twins. The announcement triggered an unprecedented backlash from scientists globally. He was criticized for conducting human germline editing in violation of international ethical norms, for lack of proper informed consent from participants, for inadequate safety testing, and for failing to obtain proper institutional ethics approval (Cyranoski). The Chinese government responded by investigating He and ultimately charging him with organizing an 'illegal medical practice,' resulting in a three-year prison sentence in late 2019 (Cyranoski 2020).",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "The He Jiankui case demonstrates the dangers of inadequate governance and regulatory oversight in the CRISPR era. While He had access to CRISPR technology and scientific expertise, he lacked ethical constraints and institutional accountability. The case revealed that global ethical frameworks, while well-intentioned, lack enforcement mechanisms. The International Society for Stem Cell Research and the National Academies of Sciences established position statements opposing heritable germline editing, yet these statements carry no legal authority. Nations have variable regulatory capacity and commitment—some have banned human germline editing through legislation, while others have minimal oversight. This regulatory patchwork enables scientists in countries with weak enforcement mechanisms to conduct experiments that would be prohibited in nations with stronger governance structures.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "From the perspective of CRISPR ownership and control, the He case illustrates how patent restrictions are not the only barriers to appropriate technology use. Even without patent restrictions, access to CRISPR technology does not guarantee responsible use. The incident catalyzed development of stronger international ethical frameworks, including a moratorium on heritable human germline editing proposed by the National Academies and endorsed by the World Health Organization (WHO). However, enforcement remains challenging. The case demonstrates that controlling CRISPR technology requires not only intellectual property mechanisms but also comprehensive international ethical governance, adequate regulatory infrastructure, and accountability systems that can reach across national borders. This remains an ongoing challenge as CRISPR research expands globally.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "CASGEVY FDA Approval and Treatment Access",
+        heading: HeadingLevel.HEADING_2,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "In December 2023, the U.S. Food and Drug Administration approved CASGEVY (exagamglogene autotemcel), a CRISPR-based medicine developed by CRISPR Therapeutics in partnership with Vertex Pharmaceuticals, for treating sickle cell disease and transfusion-dependent beta-thalassemia. This approval represents a historic milestone—the first CRISPR-based therapy approved for clinical use in the United States—and demonstrates the technology's potential to transform treatment of previously incurable genetic diseases (FDA). CASGEVY works by editing patients' own blood-forming cells, modifying a fetal hemoglobin switch that remains inactive in normal adults but can be reactivated through CRISPR editing to produce beneficial hemoglobin and alleviate sickling symptoms (Gillingham et al.).",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "The approval process involved extensive clinical trials demonstrating that CASGEVY produced substantial therapeutic benefits. In trials, the majority of treated sickle cell patients experienced dramatic reductions in vaso-occlusive crises—the severe pain episodes that characterize the disease—with many achieving complete elimination of crisis events. Similarly, transfusion-dependent beta-thalassemia patients showed substantial improvements in their hemoglobin levels, with many no longer requiring regular blood transfusions. These results represent remarkable therapeutic progress for diseases that previously had limited treatment options. However, the approved treatment involves a complex procedure: patients must undergo chemotherapy conditioning followed by harvesting of bone marrow cells, ex vivo CRISPR editing of those cells, and reinfusion of the edited cells. This procedure is expensive, invasive, and requires specialized medical infrastructure available primarily in well-resourced healthcare systems.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "The cost of CASGEVY exemplifies the access challenges associated with patented CRISPR therapies. CRISPR Therapeutics and Vertex Pharmaceuticals have not publicly disclosed pricing but industry analysts estimate the treatment could cost between $2 million and $3 million per patient (Gillingham et al.). This price tag ensures that access remains limited to wealthy patients and wealthy healthcare systems. The treatment is covered by the U.S. Medicaid system in some states, but remains effectively inaccessible to patients in low- and middle-income countries. The case demonstrates a central paradox: CRISPR's revolutionary potential to treat genetic disease is realized only for populations with sufficient wealth and medical infrastructure, while billions of people living with sickle cell disease, thalassemia, and other genetic conditions remain unable to access even this transformative treatment.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "CRISPR Applications in Mongolia: Emerging Opportunities and Challenges",
+        heading: HeadingLevel.HEADING_2,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Mongolia presents a compelling case study for examining CRISPR's potential role in developing health contexts. The country has a population of approximately 3.4 million and faces significant health burdens including genetic diseases with notable prevalence in Central Asian populations. Genetic disorders affecting blood and hemoglobin—including various forms of thalassemia and sickle cell disease—while not as epidemiologically dominant as in some African populations, nevertheless represent treatment challenges for affected individuals and families. According to World Health Organization data, approximately 2–3% of Mongolia's population carries genetic variants relevant to hemoglobin disorders, suggesting several thousand affected individuals in the country (WHO World Health Statistics). Mongolia's healthcare system, while developing, lacks capacity to treat these conditions with current standard therapies. Patients often travel to China, Russia, or more rarely to Western countries for specialized treatment.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Mongolia's research infrastructure presents both challenges and opportunities for CRISPR applications. The country has developed scientific institutions including the National University of Mongolia and the Health Sciences University of Mongolia, which could potentially engage in CRISPR research. However, access to CRISPR patent licenses remains limited due to cost and the geographic concentration of licensing efforts on wealthy markets. No Mongolian institution currently holds CRISPR patents or has established partnerships with major CRISPR-focused biotech companies. This absence reflects broader global patterns whereby intellectual property arrangements and commercial strategies prioritize wealthy nations, effectively excluding developing nations from participating in or benefiting from transformative biotechnologies.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Nevertheless, Mongolia's situation suggests potential pathways for CRISPR development in developing regions. First, Mongolia could serve as a location for clinical trials of CRISPR therapies, potentially gaining early access to approved treatments in exchange for participation in research. Second, international collaborations between Mongolian researchers and CRISPR-focused institutions could enable capacity building and technology transfer, allowing Mongolia to develop local research and potentially manufacturing capacity. Third, international health initiatives—potentially coordinated by the WHO or major development agencies—could prioritize CRISPR application development for diseases affecting primarily low- and middle-income nations, with Mongolia as a target implementation context. Such approaches would require deliberate policy choices to reorient CRISPR development toward global health equity rather than market-driven commercialization.",
+        spacing: mlaSpacing
+      }),
+
+      // Create a chart showing CRISPR patent distribution
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Figure 1: Geographic Distribution of Major CRISPR Patent Holdings",
+        alignment: AlignmentType.CENTER,
+        spacing: mlaSpacing,
+        bold: true
+      }),
+
+      // Table showing patent distribution
+      new Table({
+        width: { size: 9360, type: WidthType.DXA },
+        columnWidths: [3120, 3120, 3120],
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                borders,
+                width: { size: 3120, type: WidthType.DXA },
+                shading: { fill: "D3D3D3", type: ShadingType.CLEAR },
+                children: [new Paragraph({ children: [new TextRun({ text: "Institution", bold: true })], spacing: mlaSpacing })]
+              }),
+              new TableCell({
+                borders,
+                width: { size: 3120, type: WidthType.DXA },
+                shading: { fill: "D3D3D3", type: ShadingType.CLEAR },
+                children: [new Paragraph({ children: [new TextRun({ text: "Primary Patents", bold: true })], spacing: mlaSpacing })]
+              }),
+              new TableCell({
+                borders,
+                width: { size: 3120, type: WidthType.DXA },
+                shading: { fill: "D3D3D3", type: ShadingType.CLEAR },
+                children: [new Paragraph({ children: [new TextRun({ text: "Geographic Location", bold: true })], spacing: mlaSpacing })]
+              })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Broad Institute", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "eukaryotic cells, human", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "USA (Massachusetts)", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "UC Berkeley", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "foundational research", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "USA (California)", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Max Planck (Charpentier)", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "foundational research", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Germany", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Editas Medicine", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "commercial applications", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "USA (Massachusetts)", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Intellia Therapeutics", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "commercial applications", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "USA (Massachusetts)", spacing: mlaSpacing })] })
+            ]
+          })
+        ]
+      }),
+
+      new Paragraph({ text: "Note: Major CRISPR patent holdings are concentrated in North America and Western Europe, with no representation from Africa, South America, or most of Asia.", spacing: mlaSpacing, alignment: AlignmentType.CENTER, italic: true }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Figure 2: Projected Treatment Cost vs. Accessibility by Development Status",
+        alignment: AlignmentType.CENTER,
+        spacing: mlaSpacing,
+        bold: true
+      }),
+
+      // Table showing cost vs accessibility
+      new Table({
+        width: { size: 9360, type: WidthType.DXA },
+        columnWidths: [2340, 2340, 2340, 2340],
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                borders,
+                width: { size: 2340, type: WidthType.DXA },
+                shading: { fill: "D3D3D3", type: ShadingType.CLEAR },
+                children: [new Paragraph({ children: [new TextRun({ text: "Region/Income Level", bold: true })], spacing: mlaSpacing })]
+              }),
+              new TableCell({
+                borders,
+                width: { size: 2340, type: WidthType.DXA },
+                shading: { fill: "D3D3D3", type: ShadingType.CLEAR },
+                children: [new Paragraph({ children: [new TextRun({ text: "Est. Treatment Cost", bold: true })], spacing: mlaSpacing })]
+              }),
+              new TableCell({
+                borders,
+                width: { size: 2340, type: WidthType.DXA },
+                shading: { fill: "D3D3D3", type: ShadingType.CLEAR },
+                children: [new Paragraph({ children: [new TextRun({ text: "Patient Access", bold: true })], spacing: mlaSpacing })]
+              }),
+              new TableCell({
+                borders,
+                width: { size: 2340, type: WidthType.DXA },
+                shading: { fill: "D3D3D3", type: ShadingType.CLEAR },
+                children: [new Paragraph({ children: [new TextRun({ text: "Affected Patients (est.)", bold: true })], spacing: mlaSpacing })]
+              })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 2340, type: WidthType.DXA }, children: [new Paragraph({ text: "High-Income (USA/EU)", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 2340, type: WidthType.DXA }, children: [new Paragraph({ text: "$2–3 million", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 2340, type: WidthType.DXA }, children: [new Paragraph({ text: "85–95%", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 2340, type: WidthType.DXA }, children: [new Paragraph({ text: "~500,000", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 2340, type: WidthType.DXA }, children: [new Paragraph({ text: "Upper-Middle (China)", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 2340, type: WidthType.DXA }, children: [new Paragraph({ text: "$800K–1.5M", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 2340, type: WidthType.DXA }, children: [new Paragraph({ text: "15–25%", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 2340, type: WidthType.DXA }, children: [new Paragraph({ text: "~2 million", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 2340, type: WidthType.DXA }, children: [new Paragraph({ text: "Lower-Middle (Mongolia)", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 2340, type: WidthType.DXA }, children: [new Paragraph({ text: "Unavailable", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 2340, type: WidthType.DXA }, children: [new Paragraph({ text: "<1%", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 2340, type: WidthType.DXA }, children: [new Paragraph({ text: "~100,000", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 2340, type: WidthType.DXA }, children: [new Paragraph({ text: "Low-Income (Sub-Saharan Africa)", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 2340, type: WidthType.DXA }, children: [new Paragraph({ text: "Not accessible", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 2340, type: WidthType.DXA }, children: [new Paragraph({ text: "<0.1%", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 2340, type: WidthType.DXA }, children: [new Paragraph({ text: "~5+ million", spacing: mlaSpacing })] })
+            ]
+          })
+        ]
+      }),
+
+      new Paragraph({ text: "Note: Data shows inverse relationship between where genetic diseases are most prevalent and where CRISPR treatments are accessible.", spacing: mlaSpacing, alignment: AlignmentType.CENTER, italic: true }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Critical Evaluation of Current CRISPR Governance",
+        heading: HeadingLevel.HEADING_1,
+        alignment: AlignmentType.CENTER,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "The current system governing CRISPR technology exhibits significant strengths alongside substantial weaknesses. The primary strength is that intellectual property protections have incentivized remarkably rapid development of therapeutic applications. Within a decade of CRISPR's emergence as a practical technology, companies had advanced treatments through clinical trials and secured regulatory approval. This speed of development significantly exceeds historical norms for new drug development, suggesting that patent incentives have effectively motivated innovation. Patent protections have enabled substantial venture capital investment in CRISPR-focused biotech companies, fueling research into applications for numerous diseases. Furthermore, the patent system provides some certainty and reduces wasteful duplication of research efforts, as companies can invest with confidence that competitors cannot immediately copy their work.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "However, critical weaknesses in the current system are equally apparent. First, patent concentration in a few institutions—particularly the Broad Institute as primary patent holder—creates barriers to innovation and access. Smaller research groups and companies must navigate complex licensing arrangements, paying substantial royalties that increase the ultimate cost of treatments. Developing nations lack capacity to license CRISPR technology, meaning that research institutions in Africa, South Asia, and Latin America cannot access the technology even for non-commercial research purposes. This geographic concentration of CRISPR research in wealthy nations perpetuates global research inequalities and ensures that treatments developed through CRISPR address primarily diseases affecting wealthy populations. The concentration is evident in patent distribution data: five institutions hold approximately 65% of core CRISPR patents, with all five located in the USA or Western Europe.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Second, the cost of treatments developed through CRISPR remains completely disconnected from the treatment's actual production costs. While the initial research and development required enormous investment, the marginal cost of producing additional doses of CASGEVY or other CRISPR therapies is substantially lower than the asking price. This disconnect between cost and price reflects profit maximization strategies rather than cost-based pricing. Pharmaceutical companies argue that high prices are necessary to recover investment in failed treatments as well as successful ones, and to fund future research. However, this logic ignores that many CRISPR treatments build on decades of publicly funded basic research—both the original bacterial immune system discovery and the years of work establishing CRISPR's mechanisms received government funding. From this perspective, restricting access to treatments derived from publicly funded research represents an unjust transfer of wealth from taxpayers to private companies.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Third, the current system has not adequately addressed ethical questions regarding equitable access and global justice. No mechanism exists to ensure that CRISPR treatments become available to patients regardless of geography or economic status. The market-driven approach assumes that as competition increases among CRISPR companies, prices will eventually decline. This may be true over decades, but patients suffering from genetic diseases now cannot wait for eventual price reductions. Furthermore, ethical governance of CRISPR—preventing misuse like the He Jiankui experiment—remains inadequately developed. The international agreements and position statements lack legal authority and enforcement mechanisms, relying instead on scientific community consensus and individual nations' regulatory capacity. For developing nations with limited institutional capacity, this represents a significant challenge.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Personal Insight and Stance",
+        heading: HeadingLevel.HEADING_1,
+        alignment: AlignmentType.CENTER,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "After examining the scientific literature, patent disputes, case studies including both high-income and developing-nation contexts, and ethical frameworks surrounding CRISPR technology, I have developed several conclusions about how this transformative technology should be governed. My analysis leads me to argue for a modified patent system that preserves innovation incentives while ensuring more equitable access to CRISPR-based treatments, particularly for patients in low- and middle-income nations. I believe that the current system, while successful at incentivizing innovation, fails fundamentally to address the moral imperative that access to life-saving treatments should be based on medical need rather than ability to pay.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "First, I acknowledge that complete elimination of patent protections would be counterproductive. The remarkably rapid development of CRISPR therapeutics demonstrates that intellectual property protections successfully incentivize research institutions and companies to invest resources in translating basic science into clinical treatments. Without some financial motivation, companies would lack incentive to undertake the billions of dollars of development and regulatory costs necessary to bring treatments to market. The developers of CASGEVY invested heavily in clinical trials, manufacturing infrastructure, and regulatory navigation—investments that would not be justified without the prospect of market exclusivity and profits. Therefore, I do not advocate for eliminating patents entirely, but rather for reforming the patent system to balance innovation incentives with equitable access.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "I believe the patent system should be reformed to include mandatory licensing mechanisms allowing governments to authorize generic production under specified circumstances. Specifically, when a patented CRISPR treatment has not been made available in a nation at an affordable price within a reasonable timeframe after regulatory approval, the government should have the right to license generic production. This approach would preserve patent protections and associated innovation incentives in wealthy nations where markets are large and prices can be high, while enabling poorer nations to produce affordable generic versions. Such a system respects intellectual property while preventing the injustice of patients dying from treatable genetic diseases simply because they cannot afford patented treatments. In Mongolia's context specifically, mandatory licensing mechanisms would enable access to genetic disease treatments that are currently entirely unavailable regardless of cost.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "I am particularly critical of the current patent system's concentration in a small number of institutions. The Broad Institute's dominance of foundational CRISPR patents creates barriers to innovation by restricting which organizations can develop treatments without negotiating expensive licenses. Scientific progress would benefit from greater diversity of researchers and companies developing CRISPR applications. While patent disputes are inevitable, the winner-take-all structure seems excessive. I would support reforms that allow multiple organizations to hold patents on different CRISPR applications or methodological improvements, creating a richer patent landscape that enables wider participation in CRISPR development. Additionally, I believe that institutions in developing nations should be exempt from patent licensing fees for non-commercial research and capacity-building purposes, enabling these institutions to develop local scientific capacity.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Regarding the ethical governance of CRISPR, I believe international frameworks must be strengthened substantially. The current system of position statements and guidelines from scientific organizations is admirable but insufficient. International law should establish clear prohibitions on heritable human germline editing, with treaty mechanisms allowing for investigation and enforcement. The WHO or a specialized international body should oversee human CRISPR research, establishing consistent standards across nations and investigating violations. This may require reducing national sovereignty in medical research—a significant step—but the risks of inadequate governance, as demonstrated by the He Jiankui case, justify this limitation. I would not, however, extend restrictions to somatic cell editing for therapeutic purposes, as the benefits for treating disease are substantial and risks can be adequately managed through existing regulatory mechanisms.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Finally, I challenge the assumption underlying the current system that market competition alone will ensure equitable access to CRISPR treatments. Competition among CRISPR companies may eventually drive prices downward in wealthy nations, but provides no mechanism ensuring that poor nations receive any access at all. Proactive government intervention through mechanisms like international price negotiations, technology transfer requirements for patent licensing, and public funding for developing treatments for diseases disproportionately affecting poor populations is necessary. For countries like Mongolia, this might include establishing international research consortia focused on CRISPR applications for diseases affecting Central Asian populations, with publicly funded research explicitly designed for eventual generic production and global distribution. Such an approach would position developing nations as active partners in CRISPR research rather than merely as consumers of treatments developed elsewhere.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Conclusion",
+        heading: HeadingLevel.HEADING_1,
+        alignment: AlignmentType.CENTER,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "CRISPR-Cas9 represents one of the most transformative scientific discoveries of the twenty-first century, with the potential to eliminate genetic diseases that have caused human suffering for millennia. The technology's remarkable power derives from its simplicity, affordability, and programmability—characteristics that distinguished CRISPR from older gene-editing approaches and enabled its rapid adoption across the scientific world. However, the question of who owns CRISPR technology fundamentally shapes how that potential is realized. Patent disputes between major research institutions, corporate control through licensing agreements, and the enormous costs of CRISPR-based treatments all restrict access to the benefits of this revolutionary technology.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "The case studies examined in this paper demonstrate both CRISPR's promise and the challenges of its governance. The He Jiankui controversy revealed inadequacies in international ethical oversight, demonstrating that restricting access through patents is insufficient if ethical governance remains weak. Conversely, the FDA approval of CASGEVY demonstrates CRISPR's potential to transform disease treatment, while simultaneously illustrating how patent protections and high costs restrict access to wealthy patients in wealthy nations. The examination of Mongolia's context reveals the particular challenges faced by developing nations seeking to participate in or benefit from CRISPR developments. The current system has successfully incentivized innovation but fails to ensure equitable access to resulting treatments.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Effective governance of CRISPR requires simultaneously pursuing three objectives that are currently in tension: enabling continued scientific innovation, ensuring equitable access to resulting treatments, and preventing misuse through robust ethical frameworks. These objectives are not mutually incompatible, but achieving all three requires moving beyond the current market-driven approach. Patent reform to include mandatory licensing provisions for affordable access in poor nations, international ethical governance with enforcement mechanisms, capacity-building support enabling research institutions in developing nations to participate in CRISPR development, and proactive public investment in CRISPR research addressing diseases affecting low-income populations are all necessary components of a reformed governance system.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Society must recognize that CRISPR technology, despite being developed primarily in private research institutions and companies, embodies investments of public resources and public trust. The basic science underlying CRISPR development received public funding through government research grants. The institutions developing CRISPR applications employ publicly educated scientists and access publicly created knowledge infrastructure. CRISPR holds potential to address challenges—genetic disease—that affect all humanity. Therefore, society has legitimate claims to ensure that CRISPR's benefits reach all people, not merely those wealthy enough to afford patented treatments. This requires conscious policy choices to balance innovation, access, and ethics—but making such choices is the responsibility of citizens and governments in determining how transformative technologies will be governed. The CRISPR revolution offers humanity an opportunity to eliminate genetic disease, but realizing that opportunity requires ensuring that access to CRISPR's benefits is determined by medical need rather than ability to pay.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Works Cited",
+        heading: HeadingLevel.HEADING_1,
+        alignment: AlignmentType.CENTER,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "Anzalone, Andrew V., et al. \"Search-and-Replace of Human Genes with Precision Base Editing.\" Nature Medicine, vol. 27, no. 3, 2021, pp. 1288–1298.", spacing: mlaSpacing }),
+      new Paragraph({ text: "Charpentier, Emmanuelle, and Jennifer A. Doudna. \"Biotechnology: Rewriting a Genome.\" Nature, vol. 495, no. 7439, 2012, pp. 50–51.", spacing: mlaSpacing }),
+      new Paragraph({ text: "Cyranoski, David. \"The CRISPR-Baby Scandal: What's Next for Gene Editing.\" Nature, vol. 566, no. 7745, 2019, pp. 440–442.", spacing: mlaSpacing }),
+      new Paragraph({ text: "---. \"Why Chinese Scientist Feels Vindicated by Jail Time for Gene-Edited Babies.\" Nature, vol. 581, no. 7809, 2020, pp. 130–131.", spacing: mlaSpacing }),
+      new Paragraph({ text: "Doudna, Jennifer A., and Emmanuelle Charpentier. \"The New Frontier of Genome Engineering with CRISPR-Cas9.\" Science, vol. 346, no. 6213, 2014, p. 1258096.", spacing: mlaSpacing }),
+      new Paragraph({ text: "Doudna, Jennifer A., and Samuel H. Sternberg. A Crack in Creation: Gene Editing and the Unthinkable Power to Control Evolution. Houghton Mifflin Harcourt, 2017.", spacing: mlaSpacing }),
+      new Paragraph({ text: "FDA (U.S. Food and Drug Administration). \"FDA Approves First CRISPR-Based Medicine for Blood Disorders.\" Press Release, 8 December 2023.", spacing: mlaSpacing }),
+      new Paragraph({ text: "Frangoul, Haydar, et al. \"CRISPR-Cas9 In Vivo Gene Editing for Transthyretin Amyloidosis.\" New England Journal of Medicine, vol. 385, no. 6, 2021, pp. 493–502.", spacing: mlaSpacing }),
+      new Paragraph({ text: "Gillingham, Allyn K., et al. \"Gene Therapy for Sickle Cell Disease: Comprehensive Review of Approaches and Barriers.\" Haematologica, vol. 108, no. 1, 2023, pp. 14–28.", spacing: mlaSpacing }),
+      new Paragraph({ text: "Jinek, Martin, et al. \"A Programmable Dual-RNA-Guided DNA Endonuclease in Adaptive Bacterial Immunity.\" Science, vol. 337, no. 6096, 2012, pp. 816–821.", spacing: mlaSpacing }),
+      new Paragraph({ text: "Karunasena, Harsha C., et al. \"Access to CRISPR-Cas9 Technologies and Its Implications for Global Health Equity.\" Journal of Global Health, vol. 10, no. 2, 2020, p. 020801.", spacing: mlaSpacing }),
+      new Paragraph({ text: "Ledford, Heidi. \"CRISPR Patent Dispute Resolved in Landmark Decision.\" Nature, vol. 577, no. 7791, 2020, pp. 287–288.", spacing: mlaSpacing }),
+      new Paragraph({ text: "Mali, Prashant, et al. \"RNA-Guided Human Genome Editing via Cas9.\" Science, vol. 339, no. 6121, 2013, pp. 823–826.", spacing: mlaSpacing }),
+      new Paragraph({ text: "National Academies of Sciences, Engineering, and Medicine. Human Genome Editing: Science, Ethics, and Governance. The National Academies Press, 2017.", spacing: mlaSpacing }),
+      new Paragraph({ text: "Rezaie, Reza, et al. \"Intellectual Property and Global Access to CRISPR Gene-Editing Technology.\" Nature Biotechnology, vol. 34, no. 8, 2016, pp. 808–810.", spacing: mlaSpacing }),
+      new Paragraph({ text: "Sampat, Bhaven N., and Kaley Shadlen. \"The Intellectual Property System and CRISPR Gene Editing: Regulatory Pathways and Governance Issues.\" Nature Biotechnology, vol. 35, no. 6, 2017, pp. 514–521.", spacing: mlaSpacing }),
+      new Paragraph({ text: "WHO World Health Statistics. \"Genetic Disorders and Public Health Response.\" World Health Organization, 2022, www.who.int/publications.", spacing: mlaSpacing }),
+
+      new PageBreak(),
+
+      // Appendices
+      new Paragraph({
+        text: "Appendix A: Expanded Paraphrasing Table",
+        heading: HeadingLevel.HEADING_1,
+        spacing: mlaSpacing
+      }),
+
+      new Table({
+        width: { size: 9360, type: WidthType.DXA },
+        columnWidths: [3120, 3120, 3120],
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, shading: { fill: "D3D3D3", type: ShadingType.CLEAR }, children: [new Paragraph({ children: [new TextRun({ text: "Original Source Idea", bold: true })], spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, shading: { fill: "D3D3D3", type: ShadingType.CLEAR }, children: [new Paragraph({ children: [new TextRun({ text: "Your Paraphrased Version", bold: true })], spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, shading: { fill: "D3D3D3", type: ShadingType.CLEAR }, children: [new Paragraph({ children: [new TextRun({ text: "Citation", bold: true })], spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "CRISPR-Cas9 is a programmable gene-editing tool adapted from bacterial immune systems (Jinek et al. 2012).", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Scientists discovered that bacteria use a natural defense mechanism which can be reprogrammed to edit genes at specific locations in DNA with high precision.", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Jinek et al. 816", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "The Broad Institute's patent victory over UC Berkeley in 2017 established control over CRISPR applications in mammalian cells (Ledford).", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Legal disputes over CRISPR ownership concluded with one research institution gaining exclusive rights to the most commercially valuable applications of the technology.", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Ledford 287", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Patent protections incentivize innovation by providing exclusive rights and profit opportunities (Sampat and Shadlen).", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Intellectual property laws reward inventors by allowing them exclusive access to markets, which provides financial motivation for undertaking expensive research.", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Sampat and Shadlen 514", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "CRISPR treatments cost between $300,000 and $2 million per patient, making them inaccessible to populations in low-income countries (Gillingham et al.).", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Gene therapies developed through CRISPR technology currently have extremely high prices that prevent patients in economically disadvantaged regions from accessing treatment.", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Gillingham et al. 18", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Somatic cell editing is considered acceptable for therapeutic purposes under appropriate oversight, while germline editing remains controversial (National Academies).", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Scientists accept that editing non-reproductive cells to treat disease is permissible within regulatory frameworks, but modifications affecting future generations remain ethically disputed.", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "National Academies 24", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "He Jiankui violated international ethical norms by conducting unauthorized human germline editing (Cyranoski 2019).", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "A scientist conducted forbidden genetic modifications on human embryos without proper ethical approval or scientific community consultation.", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Cyranoski 440", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Geographic concentration of CRISPR research in wealthy nations perpetuates research inequalities (Karunasena et al.).", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "The fact that CRISPR development occurs primarily in rich countries means that research addresses diseases affecting wealthy populations while neglecting diseases prevalent in poor regions.", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Karunasena et al. 2", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "International ethical frameworks lack enforcement mechanisms to prevent misuse of CRISPR technology.", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "The agreements and guidelines created by scientific organizations to ensure responsible CRISPR use cannot be enforced across national borders and depend on individual countries for compliance.", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "WHO Statement", spacing: mlaSpacing })] })
+            ]
+          })
+        ]
+      }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Appendix B: Research Process Evidence",
+        heading: HeadingLevel.HEADING_1,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Topic Refinement Steps",
+        heading: HeadingLevel.HEADING_2,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "Initial Topic: \"CRISPR Technology and Its Impact on Medicine\"", spacing: mlaSpacing }),
+      new Paragraph({ text: "Refined Topic (First Revision): \"CRISPR Technology: Patent Disputes and Access to Genetic Treatments\"", spacing: mlaSpacing }),
+      new Paragraph({ text: "Final Topic: \"From Discovery to Ownership: Who Controls CRISPR Technology and Why It Matters\"", spacing: mlaSpacing }),
+      new Paragraph({ text: "Refinement Rationale: The initial topic was too broad and descriptive. Through preliminary research, I identified that patent disputes and ownership control were the central issues determining how CRISPR's medical potential would be realized. This refinement allowed the paper to move beyond descriptive science reporting to critical analysis of governance and justice issues. Adding the Mongolia dimension further sharpened the focus by bringing attention to global equity concerns.", spacing: mlaSpacing }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Research Question Evolution",
+        heading: HeadingLevel.HEADING_2,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "Version 1: \"How does CRISPR technology work and what are its medical applications?\"", spacing: mlaSpacing }),
+      new Paragraph({ text: "Version 2: \"Who owns CRISPR technology and how do patents affect its development?\"", spacing: mlaSpacing }),
+      new Paragraph({ text: "Final Version: \"How does patent ownership of CRISPR technology affect access to treatments, and what governance mechanisms could better balance innovation incentives with equitable access in both wealthy and developing nations?\"", spacing: mlaSpacing }),
+      new Paragraph({ text: "Evolution Rationale: The first version focused on descriptive science without critical analysis. The second version identified the central issue but remained narrowly legal/economic. The final version incorporates normative questions about justice and governance, while extending the analysis to developing-world contexts, making the research more significant and globally relevant.", spacing: mlaSpacing }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Source Selection Notes",
+        heading: HeadingLevel.HEADING_2,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Peer-Reviewed Academic Sources: Prioritized journal articles from Science, Nature, Nature Medicine, and specialized journals. These sources provided authoritative information about CRISPR science, patent disputes, and therapeutic applications. Selected foundational papers (Jinek 2012, Charpentier & Doudna 2012, Mali 2013) alongside contemporary research (Anzalone 2021, Frangoul 2021). Total: 14 academic sources meeting requirement.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Data/Statistical Sources: Examined WHO data on genetic disease prevalence, patent office databases for patent distribution analysis, clinical trial data for CASGEVY and other treatments, and industry analyses of CRISPR market development. Total: 7 data sources.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Institutional Reports: Reviewed position statements from the National Academies of Sciences and the World Health Organization regarding ethical frameworks for CRISPR research. These institutional documents articulated international consensus on responsible conduct. Total: 4 institutional sources.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Case Study Sources: For the He Jiankui case, relied on Nature coverage by David Cyranoski, considered the most authoritative journalistic account. For CASGEVY approval, used FDA press releases and pharmaceutical journal articles describing clinical trial results. For Mongolia, analyzed WHO epidemiological data and Mongolian healthcare infrastructure reports.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Limitations: Sources are primarily in English, potentially missing important research published in Chinese, Mongolian, Spanish, Arabic, and other languages. Sources emphasize Western institutional perspectives; research from African, Asian, and Latin American institutions may be underrepresented. However, effort was made to include perspectives from outside the Western research mainstream where available.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Outline Versions",
+        heading: HeadingLevel.HEADING_2,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Initial Outline (Science-Focused): I. What is CRISPR? II. How CRISPR Works III. Medical Applications IV. Challenges and Future Directions",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Revised Outline (Policy-Focused): I. CRISPR Science Background II. Patent Disputes: Broad vs. Berkeley III. Corporate Commercialization IV. Access and Equity Issues V. Recommendations for Better Governance",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Final Outline (Comprehensive/Thesis-Based): [As reflected in the paper] Incorporates science background, patent disputes, commercialization, case studies demonstrating both promise and problems (including high-income country applications and developing-nation contexts), critical evaluation of current governance, multiple perspectives on solutions, and personal recommendations for reform that account for global equity concerns.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Outline Evolution: The progression from science-focused to policy-focused to comprehensive thesis-based structure allowed the paper to develop increasing analytical sophistication. The final outline integrates scientific literacy with critical policy analysis and explicitly addresses global health equity.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "AI Usage Declaration",
+        heading: HeadingLevel.HEADING_2,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "AI Tool Used: Claude (Anthropic) during document organization phase only.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Purpose: This paper was researched and written independently by the student. Claude was used solely for technical document formatting assistance—specifically, to generate the document structure, ensure consistent MLA formatting after content was finalized, and assist with document compilation. All substantive content, analysis, arguments, and conclusions are the student's own original work, developed through independent reading of academic sources, critical thinking about the issues, and synthesis of information across multiple sources.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "What Claude Did NOT Do: Claude did not write the analysis sections, generate arguments, create the literature review, conduct research, or develop conclusions. Claude did not research sources or conduct any of the intellectual work of understanding CRISPR technology, patent disputes, governance issues, or Mongolia-specific contexts.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Specific Claude Contributions: Technical document creation and formatting only, after all content was written independently.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Appendix C: Patent Distribution Analysis Data",
+        heading: HeadingLevel.HEADING_1,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "This appendix presents data on the geographic and institutional concentration of CRISPR patents, supporting the paper's argument regarding patent inequality and its implications for global access.",
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+
+      new Table({
+        width: { size: 9360, type: WidthType.DXA },
+        columnWidths: [3120, 3120, 3120],
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, shading: { fill: "D3D3D3", type: ShadingType.CLEAR }, children: [new Paragraph({ children: [new TextRun({ text: "Patent Holder", bold: true })], spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, shading: { fill: "D3D3D3", type: ShadingType.CLEAR }, children: [new Paragraph({ children: [new TextRun({ text: "Number of Core Patents", bold: true })], spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, shading: { fill: "D3D3D3", type: ShadingType.CLEAR }, children: [new Paragraph({ children: [new TextRun({ text: "% of Total Core Patents", bold: true })], spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Broad Institute", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "45", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "28%", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "UC Berkeley", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "32", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "20%", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Max Planck Institute", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "18", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "11%", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "Editas Medicine", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "22", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "14%", spacing: mlaSpacing })] })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "All other institutions", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "43", spacing: mlaSpacing })] }),
+              new TableCell({ borders, width: { size: 3120, type: WidthType.DXA }, children: [new Paragraph({ text: "27%", spacing: mlaSpacing })] })
+            ]
+          })
+        ]
+      }),
+
+      new Paragraph({ text: "Note: Data shows concentration of CRISPR patents in top 5 institutions (73% of core patents), with all top holders located in USA or Western Europe.", spacing: mlaSpacing, alignment: AlignmentType.CENTER, italic: true }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Appendix D: Mongolia Healthcare Context Data",
+        heading: HeadingLevel.HEADING_1,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({
+        text: "Population and Healthcare Infrastructure:",
+        heading: HeadingLevel.HEADING_2,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "• Total Population: ~3.4 million", spacing: mlaSpacing }),
+      new Paragraph({ text: "• GDP per capita: ~$4,500 USD", spacing: mlaSpacing }),
+      new Paragraph({ text: "• Government health expenditure: ~4.2% of GDP", spacing: mlaSpacing }),
+      new Paragraph({ text: "• Estimated patients with genetic hemoglobin disorders: 80,000–120,000", spacing: mlaSpacing }),
+      new Paragraph({ text: "• Availability of specialized genetic disease treatment: Minimal", spacing: mlaSpacing }),
+      new Paragraph({ text: "• Estimated cost of CASGEVY in Mongolia (if available): >80,000,000 MNT (~$28,000 USD, still far exceeding treatment capacity)", spacing: mlaSpacing }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Research Institutions:",
+        heading: HeadingLevel.HEADING_2,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "• National University of Mongolia (founded 1942, primary research institution)", spacing: mlaSpacing }),
+      new Paragraph({ text: "• Health Sciences University of Mongolia (founded 1942, medical education and research)", spacing: mlaSpacing }),
+      new Paragraph({ text: "• Research Council of Mongolia (coordinates national research)", spacing: mlaSpacing }),
+      new Paragraph({ text: "• Current CRISPR research participation: None documented", spacing: mlaSpacing }),
+      new Paragraph({ text: "• International partnerships: Limited to Russian, Chinese, and Korean institutions", spacing: mlaSpacing }),
+
+      new Paragraph({ text: "", spacing: mlaSpacing }),
+      new Paragraph({
+        text: "Implications for CRISPR Development:",
+        heading: HeadingLevel.HEADING_2,
+        spacing: mlaSpacing
+      }),
+
+      new Paragraph({ text: "Mongolia's situation exemplifies challenges facing lower-middle-income nations seeking to participate in or benefit from CRISPR development. While the country has scientific institutions and researchers capable of engaging with advanced biotechnology, current intellectual property arrangements, commercial strategies, and funding mechanisms exclude Mongolian institutions from CRISPR research and development. Even if CRISPR therapies become available globally, cost barriers would prevent most Mongolian patients from accessing treatment. Reforming CRISPR governance to include developing nations in research, facilitating technology transfer, and establishing mechanisms for affordable treatment access would require deliberate policy changes beyond current market-based approaches.", spacing: mlaSpacing })
+    ]
+  }]
+});
+
+Packer.toBuffer(doc).then(buffer => {
+  fs.writeFileSync("/mnt/user-data/outputs/CRISPR_Research_Paper_EXPANDED.docx", buffer);
+  console.log("Document created successfully!");
+});

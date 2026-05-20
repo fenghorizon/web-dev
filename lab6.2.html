@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>responsive-carousel</title>
+    <style>
+        body {
+            background-color: #111827;
+        }
+ 
+        .carousel-item img {
+            height: 100vh;
+            object-fit: cover;
+        }
+ 
+        .carousel-caption {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            bottom: 2rem;
+            left: 50%;
+            right: auto;
+            transform: translateX(-50%);
+            width: auto;
+            max-width: 90%;
+            backdrop-filter: blur(4px);
+        }
+ 
+        .carousel-caption h5 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+ 
+        .carousel-caption p {
+            font-size: 1rem;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+ 
+        /* Control buttons styling */
+        .carousel-control-prev,
+        .carousel-control-next {
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+ 
+        .carousel-control-prev:hover,
+        .carousel-control-next:hover {
+            opacity: 0.9;
+        }
+ 
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.5));
+        }
+ 
+        /* Indicator styling */
+        .carousel-indicators button {
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 1%;
+            width: 32px;
+            height: 1px;
+            margin: 0 6px;
+        }
+ 
+        .carousel-indicators button.active {
+            background-color: #fff;
+            width: 32px;
+            height: 4px;
+        }
+ 
+ 
+        /* Mobile gallery layout */
+        .mobile-gallery {
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            gap: 1rem;
+        }
+ 
+        .mobile-thumbnail {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+ 
+        .mobile-thumbnail:active {
+            transform: scale(0.98);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+ 
+        /* Desktop carousel */
+        #carouselExampleCaptions {
+            display: none;
+        }
+ 
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            #carouselExampleCaptions {
+                display: none;
+            }
+ 
+            .mobile-gallery {
+                display: flex;
+            }
+ 
+            .carousel-item img {
+                height: 60vh;
+            }
+ 
+            .carousel-caption {
+                padding: 0.85rem 1rem;
+                bottom: 1rem;
+                max-width: 85%;
+            }
+ 
+            .carousel-caption h5 {
+                font-size: 1.35rem;
+            }
+ 
+            .carousel-caption p {
+                font-size: 0.9rem;
+            }
+        }
+ 
+        @media (min-width: 769px) {
+            .mobile-gallery {
+                display: none;
+            }
+ 
+            #carouselExampleCaptions {
+                display: block;
+            }
+        }
+ 
+        /* Keyboard hint (optional) */
+        .carousel-hint {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            z-index: 10;
+        }
+ 
+        @media (max-width: 768px) {
+            .carousel-hint {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Gallery (visible on mobile only) -->
+    <div class="mobile-gallery active">
+        <img src="mountain.jpg" alt="Scenery in USA" class="mobile-thumbnail">
+        <img src="porshe.jpg" alt="A Porsche car" class="mobile-thumbnail">
+        <img src="run.jpg" alt="Man running on the beach" class="mobile-thumbnail">
+    </div>
+ 
+    <!-- Desktop Carousel -->
+    <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="mountain.jpg" class="d-block w-100" alt="Scenery in USA">
+                <div class="carousel-caption">
+                    <h5>USA</h5>
+                    <p>A scenic view in the USA.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="porshe.jpg" class="d-block w-100" alt="A Porsche car">
+                <div class="carousel-caption">
+                    <h5>Porsche</h5>
+                    <p>A Porsche car on display.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="run.jpg" class="d-block w-100" alt="Man running on the beach">
+                <div class="carousel-caption">
+                    <h5>Running</h5>
+                    <p>A man running in snowy mountain</p>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+ 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    
+</body>
+</html>

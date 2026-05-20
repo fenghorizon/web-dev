@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CSS !important example</title>
+  <style>
+    .normal {
+      color: blue;
+      text-align:center;
+      font-size: 25px
+    }
+
+    .important {
+      color: red !important;
+      text-align: left
+    }
+  </style>
+</head>
+<body>
+  <!-- 1) zuvhun normal class: tsenher -->
+  <p class="normal">this text is blue</p>
+
+  <!-- 2) normal + important: ulaan (!important bga tul ulaan) -->
+  <p class="normal important">this text is red</p>
+
+  <!-- 3) Inline style purple ugsun ch !important bga tul ulaan -->
+  <p class="normal important" style="color: purple;">
+    this text is red either
+  </p>
+</body>
+</html>
